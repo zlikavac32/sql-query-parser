@@ -9,7 +9,7 @@
 int main(int argc, char *argv[]) {
 
     char buff[BUFF_LEN];
-    char *sql = malloc(1);
+    char *sql = NULL;
     size_t total_read_size = 0;
     size_t read_size = 0;
 
@@ -27,6 +27,8 @@ int main(int argc, char *argv[]) {
     struct parse_result parse_result = tsqlp_parse_result_new();
 
     parse_status_type parse_status = tsqlp_parse(sql, total_read_size, &parse_result);
+
+    free(sql);
 
     if (parse_status != PARSE_OK) {
         tsql_parse_result_free(&parse_result);
