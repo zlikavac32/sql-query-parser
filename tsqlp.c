@@ -1415,12 +1415,23 @@ parse_status_type tsqlp_parse(const char *sql, size_t len, struct parse_result *
     return status;
 }
 
-struct parse_result tsqlp_parse_result_new() {
-    return parse_result_new();
+struct parse_result *tsqlp_parse_result_new() {
+    struct parse_result *parse_result = (struct parse_result *) malloc(sizeof(struct parse_result));
+
+    if (parse_result == NULL) {
+        return NULL;
+    }
+
+    struct parse_result initialized_parse_result = parse_result_new();
+
+    memcpy(parse_result, &initialized_parse_result, sizeof(struct parse_result));
+
+    return parse_result;
 }
 
 void tsql_parse_result_free(struct parse_result *parse_result) {
     parse_result_destroy(parse_result);
+    free(parse_result);
 }
 
 extern const char *tsqlp_parse_status_to_message(parse_status_type status_type) {

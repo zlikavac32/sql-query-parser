@@ -110,52 +110,52 @@ Test(tsqlp_parse, invalid_syntax) {
 
     cr_assert_eq(PARSE_SQL_STR("SELECT ", &parse_result), PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT 1, ", &parse_result), PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT ??", &parse_result), PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT \"\\\"", &parse_result), PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT '\\'", &parse_result), PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT d.d.d.d", &parse_result), PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT INTERVAL 3", &parse_result), PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT CASE 1 THEN", &parse_result), PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT MATCH(f) AGAINST", &parse_result), PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT 1 +", &parse_result), PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, select_a_number) {
@@ -171,7 +171,7 @@ Test(tsqlp_parse, select_a_number) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, case_insensitive) {
@@ -187,7 +187,7 @@ Test(tsqlp_parse, case_insensitive) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, select_a_placeholder) {
@@ -203,7 +203,7 @@ Test(tsqlp_parse, select_a_placeholder) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 
@@ -220,7 +220,7 @@ Test(tsqlp_parse, select_a_comma_delimited_columns) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, select_subquery) {
@@ -236,7 +236,7 @@ Test(tsqlp_parse, select_subquery) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, query_modifiers) {
@@ -253,7 +253,7 @@ Test(tsqlp_parse, query_modifiers) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT DISTINCT SQL_BUFFER_RESULT 1", &parse_result), PARSE_OK);
@@ -267,7 +267,7 @@ Test(tsqlp_parse, query_modifiers) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT DISTINCTROW HIGH_PRIORITY 1", &parse_result), PARSE_OK);
@@ -281,7 +281,7 @@ Test(tsqlp_parse, query_modifiers) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(
@@ -300,7 +300,7 @@ Test(tsqlp_parse, query_modifiers) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, unary_operators) {
@@ -321,7 +321,7 @@ Test(tsqlp_parse, unary_operators) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, expression_in_parenthesis) {
@@ -337,7 +337,7 @@ Test(tsqlp_parse, expression_in_parenthesis) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 
@@ -354,7 +354,7 @@ Test(tsqlp_parse, exists) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, literals) {
@@ -377,7 +377,7 @@ Test(tsqlp_parse, literals) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(
@@ -396,7 +396,7 @@ Test(tsqlp_parse, literals) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR(
@@ -411,7 +411,7 @@ Test(tsqlp_parse, literals) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     // @todo: check if these multiple charset literals are valid
@@ -425,7 +425,7 @@ Test(tsqlp_parse, literals) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT '' COLLATE demo, '' COLLATE bar", &parse_result), PARSE_OK);
@@ -438,7 +438,7 @@ Test(tsqlp_parse, literals) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT DATE 'd', TIME 'time', TIMESTAMP 'timestamp'", &parse_result), PARSE_OK);
@@ -451,7 +451,7 @@ Test(tsqlp_parse, literals) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, colum_name) {
@@ -467,7 +467,7 @@ Test(tsqlp_parse, colum_name) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 
@@ -487,7 +487,7 @@ Test(tsqlp_parse, interval_expression) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, case_expression) {
@@ -505,7 +505,7 @@ Test(tsqlp_parse, case_expression) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, match_against) {
@@ -534,7 +534,7 @@ Test(tsqlp_parse, match_against) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, procedure_call) {
@@ -550,7 +550,7 @@ Test(tsqlp_parse, procedure_call) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, row_statement) {
@@ -566,7 +566,7 @@ Test(tsqlp_parse, row_statement) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, expression_list) {
@@ -582,7 +582,7 @@ Test(tsqlp_parse, expression_list) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, arithmetic_and_bitwise_expression) {
@@ -600,7 +600,7 @@ Test(tsqlp_parse, arithmetic_and_bitwise_expression) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, predicate_expression) {
@@ -641,7 +641,7 @@ Test(tsqlp_parse, predicate_expression) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 
@@ -705,7 +705,7 @@ Test(tsqlp_parse, expression) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, column_alias) {
@@ -721,7 +721,7 @@ Test(tsqlp_parse, column_alias) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, first_into) {
@@ -738,7 +738,7 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO @var", &parse_result), PARSE_OK);
@@ -752,7 +752,7 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO @var, @other_var, @also_var", &parse_result), PARSE_OK);
@@ -766,7 +766,7 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO OUTFILE 'bar'", &parse_result), PARSE_OK);
@@ -780,7 +780,7 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO OUTFILE 'bar' CHARACTER SET demo", &parse_result), PARSE_OK);
@@ -794,7 +794,7 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(
@@ -810,7 +810,7 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR(
@@ -827,7 +827,7 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 
@@ -892,7 +892,7 @@ Test(tsqlp_parse, from_table) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 
@@ -949,7 +949,7 @@ Test(tsqlp_parse, join_table) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, where) {
@@ -967,7 +967,7 @@ Test(tsqlp_parse, where) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, group_by) {
@@ -985,7 +985,7 @@ Test(tsqlp_parse, group_by) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, having) {
@@ -1003,7 +1003,7 @@ Test(tsqlp_parse, having) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, order_by) {
@@ -1021,7 +1021,7 @@ Test(tsqlp_parse, order_by) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, limit) {
@@ -1039,7 +1039,7 @@ Test(tsqlp_parse, limit) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t LIMIT ? 1", &parse_result), PARSE_OK);
@@ -1054,7 +1054,7 @@ Test(tsqlp_parse, limit) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t LIMIT ? OFFSET ?", &parse_result), PARSE_OK);
@@ -1069,7 +1069,7 @@ Test(tsqlp_parse, limit) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t LIMIT 2, 4", &parse_result), PARSE_OK);
@@ -1084,7 +1084,7 @@ Test(tsqlp_parse, limit) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, procedure) {
@@ -1102,7 +1102,7 @@ Test(tsqlp_parse, procedure) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t PROCEDURE a(?, 1 + ?, (SELECT 1))", &parse_result), PARSE_OK);
@@ -1117,7 +1117,7 @@ Test(tsqlp_parse, procedure) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, second_into) {
@@ -1135,7 +1135,7 @@ Test(tsqlp_parse, second_into) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, flags) {
@@ -1152,7 +1152,7 @@ Test(tsqlp_parse, flags) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
     parse_result = parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR("SELECT 1 LOCK IN SHARE MODE", &parse_result), PARSE_OK);
@@ -1166,7 +1166,7 @@ Test(tsqlp_parse, flags) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, complete_example) {
@@ -1204,7 +1204,7 @@ Test(tsqlp_parse, complete_example) {
         )
     );
 
-    tsql_parse_result_free(&parse_result);
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, parse_status_string) {

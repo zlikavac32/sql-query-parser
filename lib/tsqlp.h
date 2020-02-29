@@ -33,7 +33,7 @@ struct parse_result {
     struct sql_section flags;
 };
 
-struct parse_result tsqlp_parse_result_new();
+struct parse_result *tsqlp_parse_result_new();
 
 parse_status_type tsqlp_parse(const char *sql, size_t len, struct parse_result *parse_result);
 
