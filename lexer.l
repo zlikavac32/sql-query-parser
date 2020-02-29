@@ -24,8 +24,11 @@ void lexer_use_buffer(const char *buff, size_t len) {
     yyin = f;
 }
 
+extern int yylex_destroy (void);
+
 void lexer_clear_buffer() {
     fclose(yyin);
+    yylex_destroy();
     yyin = NULL;
 }
 
