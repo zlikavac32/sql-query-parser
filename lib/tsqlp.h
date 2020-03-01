@@ -1,6 +1,8 @@
 #ifndef SQL_QUERY_PARSER_TSQLP_H
 #define SQL_QUERY_PARSER_TSQLP_H
 
+#define API_VERSION 1
+
 struct placeholders {
     size_t *locations;
     size_t count;
@@ -40,5 +42,7 @@ parse_status_type tsqlp_parse(const char *sql, size_t len, struct parse_result *
 void tsql_parse_result_free(struct parse_result *parse_result);
 
 const char *tsqlp_parse_status_to_message(parse_status_type status_type);
+
+unsigned int tsqlp_api_version();
 
 #endif //SQL_QUERY_PARSER_TSQLP_H

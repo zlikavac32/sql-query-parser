@@ -1429,6 +1429,10 @@ struct parse_result *tsqlp_parse_result_new() {
     return parse_result;
 }
 
+unsigned int tsqlp_api_version() {
+    return API_VERSION;
+}
+
 void tsql_parse_result_free(struct parse_result *parse_result) {
     parse_result_destroy(parse_result);
     free(parse_result);
