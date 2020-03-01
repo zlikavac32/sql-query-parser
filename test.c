@@ -156,6 +156,16 @@ Test(tsqlp_parse, invalid_syntax) {
     cr_assert_eq(PARSE_SQL_STR("SELECT 1 +", &parse_result), PARSE_INVALID_SYNTAX);
 
     parse_result_destroy(&parse_result);
+    parse_result = parse_result_new();
+
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 ORDER BY ", &parse_result), PARSE_INVALID_SYNTAX);
+
+    parse_result_destroy(&parse_result);
+    parse_result = parse_result_new();
+
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 GROUP BY ", &parse_result), PARSE_INVALID_SYNTAX);
+
+    parse_result_destroy(&parse_result);
 }
 
 Test(tsqlp_parse, select_a_number) {
@@ -973,14 +983,14 @@ Test(tsqlp_parse, where) {
 Test(tsqlp_parse, group_by) {
     struct parse_result parse_result = parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t GROUP BY f, `f` ASC, f.f DESC, 2, ?, ? ASC", &parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t GROUP BY f, `f` ASC, f.f DESC, 2, ?, ? ASC, SUM(1)", &parse_result), PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
         make_parse_result(
             SECTION_COLUMNS, sql_section_new_from_string("1", 0),
             SECTION_TABLES, sql_section_new_from_string("t", 0),
-            SECTION_GROUP_BY, sql_section_new_from_string("f, `f` ASC, f.f DESC, 2, ?, ? ASC", 2, 25, 28),
+            SECTION_GROUP_BY, sql_section_new_from_string("f, `f` ASC, f.f DESC, 2, ?, ? ASC, SUM(1)", 2, 25, 28),
             NULL
         )
     );
@@ -1009,14 +1019,14 @@ Test(tsqlp_parse, having) {
 Test(tsqlp_parse, order_by) {
     struct parse_result parse_result = parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t ORDER BY f, `f` ASC, f.f DESC, 2, ?", &parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t ORDER BY f, `f` ASC, f.f DESC, 2, ?, SUM(1)", &parse_result), PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
         make_parse_result(
             SECTION_COLUMNS, sql_section_new_from_string("1", 0),
             SECTION_TABLES, sql_section_new_from_string("t", 0),
-            SECTION_ORDER_BY, sql_section_new_from_string("f, `f` ASC, f.f DESC, 2, ?", 1, 25),
+            SECTION_ORDER_BY, sql_section_new_from_string("f, `f` ASC, f.f DESC, 2, ?, SUM(1)", 1, 25),
             NULL
         )
     );

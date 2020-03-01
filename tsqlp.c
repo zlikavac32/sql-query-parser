@@ -992,8 +992,8 @@ parse_where(struct lexer *lexer, struct parse_result *parse_result, struct parse
     return PARSE_OK;
 }
 
-static parse_status_type parse_group_by_inner(struct lexer *lexer, struct parse_state *parse_state) {
-    RETURN_IF_NOT_OK(parse_table_ref(lexer, parse_state));
+static parse_status_type parse_group_by_inner(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+    RETURN_IF_NOT_OK(parse_expression(lexer, parse_result, parse_state));
 
     if (token_is_of_type(T_K_ASC, lexer_peek(lexer)) || token_is_of_type(T_K_DESC, lexer_peek(lexer))) {
         lexer_consume(lexer);
@@ -1002,7 +1002,7 @@ static parse_status_type parse_group_by_inner(struct lexer *lexer, struct parse_
     while (token_is_of_type(T_COMMA, lexer_peek(lexer))) {
         lexer_consume(lexer);
 
-        RETURN_IF_NOT_OK(parse_table_ref(lexer, parse_state));
+        RETURN_IF_NOT_OK(parse_expression(lexer, parse_result, parse_state));
 
         if (token_is_of_type(T_K_ASC, lexer_peek(lexer)) || token_is_of_type(T_K_DESC, lexer_peek(lexer))) {
             lexer_consume(lexer);
@@ -1019,7 +1019,7 @@ parse_group_by(struct lexer *lexer, struct parse_result *parse_result, struct pa
 
         RETURN_ERROR_IF_TOKEN_NOT(T_K_BY, lexer);
 
-        TRACK_SECTION(group_by, lexer, parse_result, parse_state, parse_group_by_inner(lexer, parse_state));
+        TRACK_SECTION(group_by, lexer, parse_result, parse_state, parse_group_by_inner(lexer, parse_result, parse_state));
     }
 
     return PARSE_OK;
@@ -1056,8 +1056,8 @@ parse_having(struct lexer *lexer, struct parse_result *parse_result, struct pars
 }
 
 
-static parse_status_type parse_order_by_inner(struct lexer *lexer, struct parse_state *parse_state) {
-    RETURN_IF_NOT_OK(parse_table_ref(lexer, parse_state));
+static parse_status_type parse_order_by_inner(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+    RETURN_IF_NOT_OK(parse_expression(lexer, parse_result, parse_state));
 
     if (token_is_of_type(T_K_ASC, lexer_peek(lexer)) || token_is_of_type(T_K_DESC, lexer_peek(lexer))) {
         lexer_consume(lexer);
@@ -1066,7 +1066,7 @@ static parse_status_type parse_order_by_inner(struct lexer *lexer, struct parse_
     while (token_is_of_type(T_COMMA, lexer_peek(lexer))) {
         lexer_consume(lexer);
 
-        RETURN_IF_NOT_OK(parse_table_ref(lexer, parse_state));
+        RETURN_IF_NOT_OK(parse_expression(lexer, parse_result, parse_state));
 
         if (token_is_of_type(T_K_ASC, lexer_peek(lexer)) || token_is_of_type(T_K_DESC, lexer_peek(lexer))) {
             lexer_consume(lexer);
@@ -1083,7 +1083,7 @@ parse_order_by(struct lexer *lexer, struct parse_result *parse_result, struct pa
 
         RETURN_ERROR_IF_TOKEN_NOT(T_K_BY, lexer);
 
-        TRACK_SECTION(order_by, lexer, parse_result, parse_state, parse_order_by_inner(lexer, parse_state));
+        TRACK_SECTION(order_by, lexer, parse_result, parse_state, parse_order_by_inner(lexer, parse_result, parse_state));
     }
 
     return PARSE_OK;
