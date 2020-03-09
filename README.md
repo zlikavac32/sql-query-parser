@@ -1,5 +1,7 @@
 # Tiny SQL Parser
 
+[![Build Status](https://travis-ci.org/zlikavac32/sql-query-parser.svg?branch=master)](https://travis-ci.org/zlikavac32/sql-query-parser)
+
 Small **ASCII only** SQL parser for the `SELECT` statements intended to be used in query builders. The statement is decomposed into sections and placeholders are collected for each section. Only unnamed placeholders are supported which means that for every placeholder only it's offset within the section is recorded.
 
 Currently this parser targets MySQL SQL grammar until version `8.0`.
