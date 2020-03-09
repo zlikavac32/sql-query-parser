@@ -876,6 +876,13 @@ parse_table_factor(struct lexer *lexer, struct parse_result *parse_result, struc
             RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
             return PARSE_OK;
+        case T_PLACEHOLDER: {
+            struct token token = lexer_consume(lexer);
+
+            parse_state_register_placeholder(parse_state, token_position(&token));
+
+            return PARSE_OK;
+        }
         case T_IDENTIFIER:
             // intentional
         case T_QUALIFIED_IDENTIFIER:

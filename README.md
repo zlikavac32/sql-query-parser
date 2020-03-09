@@ -26,6 +26,12 @@ where 1 4 5 a = ?
 
 Statement contains three sections, `columns`, `tables` and `where`. Section `column` has 2 parameters at offsets 7 and 11 and is 12 bytes long. Then comes 12 bytes of the section content. Section `tables` contains 0 parameters and is 1 byte long. Content of the `tables` section is `t`. Finally, `where` section has 1 parameter at offset 4 and the content of that section is `a = ?` which is 5 bytes long.
 
+## Placeholders as table names
+
+This parser supports placeholders as table name. That is something invalid in regular SQL but it's useful in query building.
+
+For example, parser can parse `SELECT * FROM ?` and expose `?` as a placeholder which can later have inline subquery or something else.
+
 ## Installation
 
 Clone this repository and within do the following.

@@ -1289,3 +1289,45 @@ Test(tsqlp_parse, parse_result_serialize_full) {
 
     parse_result_destroy(&parse_result);
 }
+
+Test(tsqlp_parse, placeholder_as_table_name) {
+    struct parse_result parse_result = parse_result_new();
+
+    cr_assert_eq(
+            PARSE_SQL_STR(
+                    "SELECT 1 FROM ?", &parse_result
+            ),
+            PARSE_OK
+    );
+
+    assert_parse_result_eq(
+            parse_result,
+            make_parse_result(
+                    SECTION_COLUMNS, sql_section_new_from_string("1", 0),
+                    SECTION_TABLES, sql_section_new_from_string("?", 1, 0),
+                    NULL
+            )
+    );
+
+    parse_result_destroy(&parse_result);
+
+    parse_result = parse_result_new();
+
+    cr_assert_eq(
+            PARSE_SQL_STR(
+                    "SELECT 1 FROM t LEFT JOIN ? ON 1", &parse_result
+            ),
+            PARSE_OK
+    );
+
+    assert_parse_result_eq(
+            parse_result,
+            make_parse_result(
+                    SECTION_COLUMNS, sql_section_new_from_string("1", 0),
+                    SECTION_TABLES, sql_section_new_from_string("t LEFT JOIN ? ON 1", 1, 12),
+                    NULL
+            )
+    );
+
+    parse_result_destroy(&parse_result);
+}
