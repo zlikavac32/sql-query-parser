@@ -81,8 +81,6 @@ parse_join_specification(struct lexer *lexer, struct parse_result *parse_result,
                          parse_strength strength
 );
 
-static parse_status_type parse_table_ref(struct lexer *lexer, struct parse_state *parse_state);
-
 void *malloc_panic(size_t size);
 
 void *realloc_panic(void *ptr, size_t size);
@@ -1023,25 +1021,6 @@ parse_group_by(struct lexer *lexer, struct parse_result *parse_result, struct pa
     }
 
     return PARSE_OK;
-}
-
-static parse_status_type parse_table_ref(struct lexer *lexer, struct parse_state *parse_state) {
-    const struct token *token = lexer_peek(lexer);
-
-    if (token_is_of_type(T_IDENTIFIER, token) || token_is_of_type(T_NUMBER, token) ||
-        token_is_of_type(T_QUALIFIED_IDENTIFIER, token)) {
-        lexer_consume(lexer);
-
-        return PARSE_OK;
-    } else if (token_is_of_type(T_PLACEHOLDER, token)) {
-        struct token placeholder_token = lexer_consume(lexer);
-
-        parse_state_register_placeholder(parse_state, token_position(&placeholder_token));
-
-        return PARSE_OK;
-    }
-
-    return PARSE_INVALID_SYNTAX;
 }
 
 static parse_status_type
