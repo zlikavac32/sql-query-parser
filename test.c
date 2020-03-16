@@ -467,12 +467,12 @@ Test(tsqlp_parse, literals) {
 Test(tsqlp_parse, colum_name) {
     struct parse_result parse_result = parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT d, `d`, `d.d`, `*`, *, d.d, d.d.d, d.*, d.d.*", &parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT d, `d`, `d.d`, `*`, *, d.d, d.d.d, d.*, d.d.*, _d, $d", &parse_result), PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
         make_parse_result(
-            SECTION_COLUMNS, sql_section_new_from_string("d, `d`, `d.d`, `*`, *, d.d, d.d.d, d.*, d.d.*", 0),
+            SECTION_COLUMNS, sql_section_new_from_string("d, `d`, `d.d`, `*`, *, d.d, d.d.d, d.*, d.d.*, _d, $d", 0),
             NULL
         )
     );

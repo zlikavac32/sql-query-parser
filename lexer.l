@@ -162,9 +162,9 @@ YEAR_MONTH|YEAR|WEEK|SECOND_MICROSECOND|SECOND|QUARTER|MONTH|MINUTE_SECOND|MINUT
 ([[:digit:]]+("."[[:digit:]]*)?|"."[[:digit:]]+)([eE][+-]?[[:digit:]]+)?     RETURN_TOKEN_FOR(T_NUMBER);
 [[:space:]]+    RETURN_TOKEN_FOR(T_WHITE_SPACE);
 [[:alnum:]]*'(\\.|[^'\\]+)*'([[:space:]]*[[:alnum:]]*'(\\.|[^'\\]+)*')*|[[:alnum:]]*\"(\\.|[^\"\\]+)*\"([[:space:]]*[[:alnum:]]*\"(\\.|[^\"\\]+)*\")*    RETURN_TOKEN_FOR(T_STRING);
-[a-z][a-z_$0-9]*|`[^`]+`    RETURN_TOKEN_FOR(T_IDENTIFIER);
-@@?([a-z][a-z_$0-9]*|`[^`]+`)    RETURN_TOKEN_FOR(T_VARIABLE);
-([a-z][a-z_$0-9]*|`[^`]+`)("."([a-z][a-z_$0-9]*|`[^`]+`)){1,2}    RETURN_TOKEN_FOR(T_QUALIFIED_IDENTIFIER);
-([a-z][a-z_$0-9]*|`[^`]+`)"."("*"|([a-z][a-z_$0-9]*|`[^`]+`)".*")    RETURN_TOKEN_FOR(T_WILDCARD_IDENTIFIER);
+[a-z_$][a-z_$0-9]*|`[^`]+`    RETURN_TOKEN_FOR(T_IDENTIFIER);
+@@?([a-z_$][a-z_$0-9]*|`[^`]+`)    RETURN_TOKEN_FOR(T_VARIABLE);
+([a-z_$][a-z_$0-9]*|`[^`]+`)("."([a-z_$][a-z_$0-9]*|`[^`]+`)){1,2}    RETURN_TOKEN_FOR(T_QUALIFIED_IDENTIFIER);
+([a-z_$][a-z_$0-9]*|`[^`]+`)"."("*"|([a-z_$][a-z_$0-9]*|`[^`]+`)".*")    RETURN_TOKEN_FOR(T_WILDCARD_IDENTIFIER);
 . RETURN_TOKEN_FOR(T_UNKNOWN);
 %% 
