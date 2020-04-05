@@ -163,27 +163,8 @@ extern FILE *yyin, *yyout;
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
     
-    /* Note: We specifically omit the test for yy_rule_can_match_eol because it requires
-     *       access to the local variable yy_act. Since yyless() is a macro, it would break
-     *       existing scanners that call yyless() from OUTSIDE yylex.
-     *       One obvious solution it to make yy_act a global. I tried that, and saw
-     *       a 5% performance hit in a non-yylineno scanner, because yy_act is
-     *       normally declared as a register variable-- so it is not worth it.
-     */
-    #define  YY_LESS_LINENO(n) \
-            do { \
-                int yyl;\
-                for ( yyl = n; yyl < yyleng; ++yyl )\
-                    if ( yytext[yyl] == '\n' )\
-                        --yylineno;\
-            }while(0)
-    #define YY_LINENO_REWIND_TO(dst) \
-            do {\
-                const char *p;\
-                for ( p = yy_cp-1; p >= (dst); --p)\
-                    if ( *p == '\n' )\
-                        --yylineno;\
-            }while(0)
+    #define YY_LESS_LINENO(n)
+    #define YY_LINENO_REWIND_TO(ptr)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
@@ -1743,17 +1724,6 @@ static const flex_int16_t yy_chk[4877] =
       664,  664,  664,  664,  664,  664
     } ;
 
-/* Table of booleans, true if rule could match eol. */
-static const flex_int32_t yy_rule_can_match_eol[129] =
-    {   0,
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 1, 1, 1, 1, 1, 1, 0, 0,     };
-
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
 
@@ -1769,7 +1739,7 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "lexer.l"
-#line 8 "lexer.l"
+#line 4 "lexer.l"
 
 #include "lexer.h"
 #include "stdio.h"
@@ -1799,8 +1769,8 @@ void lexer_clear_buffer() {
 
 #define RETURN_TOKEN_FOR(type) return token_new(type, yytext, yyleng, consumed_chars - yyleng)
 
-#line 1802 "scanner.c"
-#line 1803 "scanner.c"
+#line 1772 "scanner.c"
+#line 1773 "scanner.c"
 
 #define INITIAL 0
 
@@ -2017,9 +1987,9 @@ YY_DECL
 		}
 
 	{
-#line 40 "lexer.l"
+#line 36 "lexer.l"
 
-#line 2022 "scanner.c"
+#line 1992 "scanner.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -2065,16 +2035,6 @@ yy_find_action:
 
 		YY_DO_BEFORE_ACTION;
 
-		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
-			{
-			int yyl;
-			for ( yyl = 0; yyl < yyleng; ++yyl )
-				if ( yytext[yyl] == '\n' )
-					
-    yylineno++;
-;
-			}
-
 do_action:	/* This label is used only to access EOF actions. */
 
 		switch ( yy_act )
@@ -2088,651 +2048,651 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 41 "lexer.l"
+#line 37 "lexer.l"
 RETURN_TOKEN_FOR(T_K_ALL);
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 42 "lexer.l"
+#line 38 "lexer.l"
 RETURN_TOKEN_FOR(T_K_DISTINCT);
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 43 "lexer.l"
+#line 39 "lexer.l"
 RETURN_TOKEN_FOR(T_K_DISTINCTROW);
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 44 "lexer.l"
+#line 40 "lexer.l"
 RETURN_TOKEN_FOR(T_K_HIGH_PRIORITY);
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 45 "lexer.l"
+#line 41 "lexer.l"
 RETURN_TOKEN_FOR(T_K_STRAIGHT_JOIN);
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 46 "lexer.l"
+#line 42 "lexer.l"
 RETURN_TOKEN_FOR(T_K_SQL_SMALL_RESULT);
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 47 "lexer.l"
+#line 43 "lexer.l"
 RETURN_TOKEN_FOR(T_K_SQL_BIG_RESULT);
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 48 "lexer.l"
+#line 44 "lexer.l"
 RETURN_TOKEN_FOR(T_K_SQL_BUFFER_RESULT);
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 49 "lexer.l"
+#line 45 "lexer.l"
 RETURN_TOKEN_FOR(T_K_SQL_CACHE);
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 50 "lexer.l"
+#line 46 "lexer.l"
 RETURN_TOKEN_FOR(T_K_SQL_NO_CACHE);
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 51 "lexer.l"
+#line 47 "lexer.l"
 RETURN_TOKEN_FOR(T_K_SQL_CALC_FOUND_ROWS);
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 52 "lexer.l"
+#line 48 "lexer.l"
 RETURN_TOKEN_FOR(T_K_BINARY);
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 53 "lexer.l"
+#line 49 "lexer.l"
 RETURN_TOKEN_FOR(T_K_EXISTS);
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 54 "lexer.l"
+#line 50 "lexer.l"
 RETURN_TOKEN_FOR(T_K_SELECT);
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 55 "lexer.l"
+#line 51 "lexer.l"
 RETURN_TOKEN_FOR(T_K_NULL);
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 56 "lexer.l"
+#line 52 "lexer.l"
 RETURN_TOKEN_FOR(T_K_TRUE);
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 57 "lexer.l"
+#line 53 "lexer.l"
 RETURN_TOKEN_FOR(T_K_FALSE);
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 58 "lexer.l"
+#line 54 "lexer.l"
 RETURN_TOKEN_FOR(T_K_COLLATE);
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 59 "lexer.l"
+#line 55 "lexer.l"
 RETURN_TOKEN_FOR(T_K_DATE);
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 60 "lexer.l"
+#line 56 "lexer.l"
 RETURN_TOKEN_FOR(T_K_TIME);
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 61 "lexer.l"
+#line 57 "lexer.l"
 RETURN_TOKEN_FOR(T_K_TIMESTAMP);
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 62 "lexer.l"
+#line 58 "lexer.l"
 RETURN_TOKEN_FOR(T_K_INTERVAL);
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 63 "lexer.l"
+#line 59 "lexer.l"
 RETURN_TOKEN_FOR(T_K_CASE);
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 64 "lexer.l"
+#line 60 "lexer.l"
 RETURN_TOKEN_FOR(T_K_WHEN);
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 65 "lexer.l"
+#line 61 "lexer.l"
 RETURN_TOKEN_FOR(T_K_THEN);
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 66 "lexer.l"
+#line 62 "lexer.l"
 RETURN_TOKEN_FOR(T_K_ELSE);
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 67 "lexer.l"
+#line 63 "lexer.l"
 RETURN_TOKEN_FOR(T_K_END);
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 68 "lexer.l"
+#line 64 "lexer.l"
 RETURN_TOKEN_FOR(T_K_MATCH);
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 69 "lexer.l"
+#line 65 "lexer.l"
 RETURN_TOKEN_FOR(T_K_AGAINST);
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 70 "lexer.l"
+#line 66 "lexer.l"
 RETURN_TOKEN_FOR(T_K_IN);
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 71 "lexer.l"
+#line 67 "lexer.l"
 RETURN_TOKEN_FOR(T_K_NATURAL);
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 72 "lexer.l"
+#line 68 "lexer.l"
 RETURN_TOKEN_FOR(T_K_LANGUAGE);
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 73 "lexer.l"
+#line 69 "lexer.l"
 RETURN_TOKEN_FOR(T_K_MODE);
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 74 "lexer.l"
+#line 70 "lexer.l"
 RETURN_TOKEN_FOR(T_K_WITH);
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 75 "lexer.l"
+#line 71 "lexer.l"
 RETURN_TOKEN_FOR(T_K_QUERY);
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 76 "lexer.l"
+#line 72 "lexer.l"
 RETURN_TOKEN_FOR(T_K_EXPANSION);
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 77 "lexer.l"
+#line 73 "lexer.l"
 RETURN_TOKEN_FOR(T_K_BOOLEAN);
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 78 "lexer.l"
+#line 74 "lexer.l"
 RETURN_TOKEN_FOR(T_K_ROW);
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 79 "lexer.l"
+#line 75 "lexer.l"
 RETURN_TOKEN_FOR(T_K_MOD);
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 80 "lexer.l"
+#line 76 "lexer.l"
 RETURN_TOKEN_FOR(T_K_DIV);
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 81 "lexer.l"
+#line 77 "lexer.l"
 RETURN_TOKEN_FOR(T_K_SOUNDS);
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 82 "lexer.l"
+#line 78 "lexer.l"
 RETURN_TOKEN_FOR(T_K_LIKE);
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 83 "lexer.l"
+#line 79 "lexer.l"
 RETURN_TOKEN_FOR(T_K_NOT);
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 84 "lexer.l"
+#line 80 "lexer.l"
 RETURN_TOKEN_FOR(T_K_BETWEEN);
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 85 "lexer.l"
+#line 81 "lexer.l"
 RETURN_TOKEN_FOR(T_K_REGEXP);
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 86 "lexer.l"
+#line 82 "lexer.l"
 RETURN_TOKEN_FOR(T_K_AND);
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 87 "lexer.l"
+#line 83 "lexer.l"
 RETURN_TOKEN_FOR(T_K_ESCAPE);
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 88 "lexer.l"
+#line 84 "lexer.l"
 RETURN_TOKEN_FOR(T_K_IS);
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 89 "lexer.l"
+#line 85 "lexer.l"
 RETURN_TOKEN_FOR(T_K_UNKNOWN);
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 90 "lexer.l"
+#line 86 "lexer.l"
 RETURN_TOKEN_FOR(T_K_XOR);
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 91 "lexer.l"
+#line 87 "lexer.l"
 RETURN_TOKEN_FOR(T_K_OR);
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 92 "lexer.l"
+#line 88 "lexer.l"
 RETURN_TOKEN_FOR(T_K_ANY);
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 93 "lexer.l"
+#line 89 "lexer.l"
 RETURN_TOKEN_FOR(T_K_AS);
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 94 "lexer.l"
+#line 90 "lexer.l"
 RETURN_TOKEN_FOR(T_K_INTO);
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 95 "lexer.l"
+#line 91 "lexer.l"
 RETURN_TOKEN_FOR(T_K_DUMPFILE);
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 96 "lexer.l"
+#line 92 "lexer.l"
 RETURN_TOKEN_FOR(T_K_OUTFILE);
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 97 "lexer.l"
+#line 93 "lexer.l"
 RETURN_TOKEN_FOR(T_K_CHARACTER);
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 98 "lexer.l"
+#line 94 "lexer.l"
 RETURN_TOKEN_FOR(T_K_SET);
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 99 "lexer.l"
+#line 95 "lexer.l"
 RETURN_TOKEN_FOR(T_K_COLUMNS);
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 100 "lexer.l"
+#line 96 "lexer.l"
 RETURN_TOKEN_FOR(T_K_FIELDS);
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 101 "lexer.l"
+#line 97 "lexer.l"
 RETURN_TOKEN_FOR(T_K_TERMINATED);
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 102 "lexer.l"
+#line 98 "lexer.l"
 RETURN_TOKEN_FOR(T_K_BY);
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 103 "lexer.l"
+#line 99 "lexer.l"
 RETURN_TOKEN_FOR(T_K_OPTIONALLY);
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 104 "lexer.l"
+#line 100 "lexer.l"
 RETURN_TOKEN_FOR(T_K_ENCLOSED);
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 105 "lexer.l"
+#line 101 "lexer.l"
 RETURN_TOKEN_FOR(T_K_ESCAPED);
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 106 "lexer.l"
+#line 102 "lexer.l"
 RETURN_TOKEN_FOR(T_K_LINES);
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 107 "lexer.l"
+#line 103 "lexer.l"
 RETURN_TOKEN_FOR(T_K_STARTING);
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 108 "lexer.l"
+#line 104 "lexer.l"
 RETURN_TOKEN_FOR(T_K_FROM);
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 109 "lexer.l"
+#line 105 "lexer.l"
 RETURN_TOKEN_FOR(T_K_PARTITION);
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 110 "lexer.l"
+#line 106 "lexer.l"
 RETURN_TOKEN_FOR(T_K_USE);
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 111 "lexer.l"
+#line 107 "lexer.l"
 RETURN_TOKEN_FOR(T_K_INDEX);
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 112 "lexer.l"
+#line 108 "lexer.l"
 RETURN_TOKEN_FOR(T_K_KEY);
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 113 "lexer.l"
+#line 109 "lexer.l"
 RETURN_TOKEN_FOR(T_K_FOR);
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 114 "lexer.l"
+#line 110 "lexer.l"
 RETURN_TOKEN_FOR(T_K_JOIN);
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 115 "lexer.l"
+#line 111 "lexer.l"
 RETURN_TOKEN_FOR(T_K_ORDER);
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 116 "lexer.l"
+#line 112 "lexer.l"
 RETURN_TOKEN_FOR(T_K_GROUP);
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 117 "lexer.l"
+#line 113 "lexer.l"
 RETURN_TOKEN_FOR(T_K_IGNORE);
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 118 "lexer.l"
+#line 114 "lexer.l"
 RETURN_TOKEN_FOR(T_K_FORCE);
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 119 "lexer.l"
+#line 115 "lexer.l"
 RETURN_TOKEN_FOR(T_K_INNER);
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 120 "lexer.l"
+#line 116 "lexer.l"
 RETURN_TOKEN_FOR(T_K_LEFT);
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 121 "lexer.l"
+#line 117 "lexer.l"
 RETURN_TOKEN_FOR(T_K_RIGHT);
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 122 "lexer.l"
+#line 118 "lexer.l"
 RETURN_TOKEN_FOR(T_K_OUTER);
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 123 "lexer.l"
+#line 119 "lexer.l"
 RETURN_TOKEN_FOR(T_K_ON);
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 124 "lexer.l"
+#line 120 "lexer.l"
 RETURN_TOKEN_FOR(T_K_USING);
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 125 "lexer.l"
+#line 121 "lexer.l"
 RETURN_TOKEN_FOR(T_K_STRAIGHT);
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 126 "lexer.l"
+#line 122 "lexer.l"
 RETURN_TOKEN_FOR(T_K_CROSS);
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 127 "lexer.l"
+#line 123 "lexer.l"
 RETURN_TOKEN_FOR(T_K_WHERE);
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 128 "lexer.l"
+#line 124 "lexer.l"
 RETURN_TOKEN_FOR(T_K_HAVING);
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 129 "lexer.l"
+#line 125 "lexer.l"
 RETURN_TOKEN_FOR(T_K_ASC);
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 130 "lexer.l"
+#line 126 "lexer.l"
 RETURN_TOKEN_FOR(T_K_DESC);
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 131 "lexer.l"
+#line 127 "lexer.l"
 RETURN_TOKEN_FOR(T_K_LIMIT);
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 132 "lexer.l"
+#line 128 "lexer.l"
 RETURN_TOKEN_FOR(T_K_OFFSET);
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 133 "lexer.l"
+#line 129 "lexer.l"
 RETURN_TOKEN_FOR(T_K_PROCEDURE);
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 134 "lexer.l"
+#line 130 "lexer.l"
 RETURN_TOKEN_FOR(T_K_UPDATE);
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 135 "lexer.l"
+#line 131 "lexer.l"
 RETURN_TOKEN_FOR(T_K_LOCK);
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 136 "lexer.l"
+#line 132 "lexer.l"
 RETURN_TOKEN_FOR(T_K_SHARE);
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 138 "lexer.l"
+#line 134 "lexer.l"
 RETURN_TOKEN_FOR(T_COMPARISON_OPERATOR);
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 139 "lexer.l"
+#line 135 "lexer.l"
 RETURN_TOKEN_FOR(T_ARROW);
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 140 "lexer.l"
+#line 136 "lexer.l"
 RETURN_TOKEN_FOR(T_AND);
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 141 "lexer.l"
+#line 137 "lexer.l"
 RETURN_TOKEN_FOR(T_BIT_OR);
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 142 "lexer.l"
+#line 138 "lexer.l"
 RETURN_TOKEN_FOR(T_BIT_AND);
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 143 "lexer.l"
+#line 139 "lexer.l"
 RETURN_TOKEN_FOR(T_LEFT_SHIFT);
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 144 "lexer.l"
+#line 140 "lexer.l"
 RETURN_TOKEN_FOR(T_RIGHT_SHIFT);
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 145 "lexer.l"
+#line 141 "lexer.l"
 RETURN_TOKEN_FOR(T_DIV);
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 146 "lexer.l"
+#line 142 "lexer.l"
 RETURN_TOKEN_FOR(T_MOD);
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 147 "lexer.l"
+#line 143 "lexer.l"
 RETURN_TOKEN_FOR(T_BIT_XOR);
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 148 "lexer.l"
+#line 144 "lexer.l"
 RETURN_TOKEN_FOR(T_OR);
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 149 "lexer.l"
+#line 145 "lexer.l"
 RETURN_TOKEN_FOR(T_PLUS);
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 150 "lexer.l"
+#line 146 "lexer.l"
 RETURN_TOKEN_FOR(T_MINUS);
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 151 "lexer.l"
+#line 147 "lexer.l"
 RETURN_TOKEN_FOR(T_MULT);
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 152 "lexer.l"
+#line 148 "lexer.l"
 RETURN_TOKEN_FOR(T_NOT);
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 153 "lexer.l"
+#line 149 "lexer.l"
 RETURN_TOKEN_FOR(T_BIT_NOT);
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 154 "lexer.l"
+#line 150 "lexer.l"
 RETURN_TOKEN_FOR(T_COMMA);
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 155 "lexer.l"
+#line 151 "lexer.l"
 RETURN_TOKEN_FOR(T_OPEN_PAREN);
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
-#line 156 "lexer.l"
+#line 152 "lexer.l"
 RETURN_TOKEN_FOR(T_CLOSE_PAREN);
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 157 "lexer.l"
+#line 153 "lexer.l"
 RETURN_TOKEN_FOR(T_PLACEHOLDER);
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 159 "lexer.l"
+#line 155 "lexer.l"
 RETURN_TOKEN_FOR(T_BIT_VALUE);
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 160 "lexer.l"
+#line 156 "lexer.l"
 RETURN_TOKEN_FOR(T_HEX_VALUE);
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
-#line 161 "lexer.l"
+#line 157 "lexer.l"
 RETURN_TOKEN_FOR(T_INTERVAL_UNIT);
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 162 "lexer.l"
+#line 158 "lexer.l"
 RETURN_TOKEN_FOR(T_NUMBER);
 	YY_BREAK
 case 121:
 /* rule 121 can match eol */
 YY_RULE_SETUP
-#line 163 "lexer.l"
+#line 159 "lexer.l"
 RETURN_TOKEN_FOR(T_WHITE_SPACE);
 	YY_BREAK
 case 122:
 /* rule 122 can match eol */
 YY_RULE_SETUP
-#line 164 "lexer.l"
+#line 160 "lexer.l"
 RETURN_TOKEN_FOR(T_STRING);
 	YY_BREAK
 case 123:
 /* rule 123 can match eol */
 YY_RULE_SETUP
-#line 165 "lexer.l"
+#line 161 "lexer.l"
 RETURN_TOKEN_FOR(T_IDENTIFIER);
 	YY_BREAK
 case 124:
 /* rule 124 can match eol */
 YY_RULE_SETUP
-#line 166 "lexer.l"
+#line 162 "lexer.l"
 RETURN_TOKEN_FOR(T_VARIABLE);
 	YY_BREAK
 case 125:
 /* rule 125 can match eol */
 YY_RULE_SETUP
-#line 167 "lexer.l"
+#line 163 "lexer.l"
 RETURN_TOKEN_FOR(T_QUALIFIED_IDENTIFIER);
 	YY_BREAK
 case 126:
 /* rule 126 can match eol */
 YY_RULE_SETUP
-#line 168 "lexer.l"
+#line 164 "lexer.l"
 RETURN_TOKEN_FOR(T_WILDCARD_IDENTIFIER);
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
-#line 169 "lexer.l"
+#line 165 "lexer.l"
 RETURN_TOKEN_FOR(T_UNKNOWN);
 	YY_BREAK
 case 128:
 YY_RULE_SETUP
-#line 170 "lexer.l"
+#line 166 "lexer.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 2735 "scanner.c"
+#line 2695 "scanner.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -3100,10 +3060,6 @@ static int yy_get_next_buffer (void)
 
 	*--yy_cp = (char) c;
 
-    if ( c == '\n' ){
-        --yylineno;
-    }
-
 	(yytext_ptr) = yy_bp;
 	(yy_hold_char) = *yy_cp;
 	(yy_c_buf_p) = yy_cp;
@@ -3180,11 +3136,6 @@ static int yy_get_next_buffer (void)
 	c = *(unsigned char *) (yy_c_buf_p);	/* cast for 8-bit char's */
 	*(yy_c_buf_p) = '\0';	/* preserve yytext */
 	(yy_hold_char) = *++(yy_c_buf_p);
-
-	if ( c == '\n' )
-		
-    yylineno++;
-;
 
 	return c;
 }
@@ -3652,9 +3603,6 @@ static int yy_init_globals (void)
      * This function is called from yylex_destroy(), so don't allocate here.
      */
 
-    /* We do not touch yylineno unless the option is enabled. */
-    yylineno =  1;
-    
     (yy_buffer_stack) = NULL;
     (yy_buffer_stack_top) = 0;
     (yy_buffer_stack_max) = 0;
@@ -3749,6 +3697,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 170 "lexer.l"
+#line 166 "lexer.l"
 
 

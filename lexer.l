@@ -1,8 +1,4 @@
-%option outfile="scanner.c"
-%option noyywrap
-%option warn nodefault
-%option yylineno
-%option caseless
+%option outfile="scanner.c" noyywrap warn nodefault caseless
 
 %{
 
@@ -35,7 +31,7 @@ void lexer_clear_buffer() {
 #define RETURN_TOKEN_FOR(type) return token_new(type, yytext, yyleng, consumed_chars - yyleng)
 
 %} 
-  
+
 
 %%
 ALL      RETURN_TOKEN_FOR(T_K_ALL);
