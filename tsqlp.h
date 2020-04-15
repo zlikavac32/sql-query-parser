@@ -6,8 +6,6 @@
 
 #include "lib/tsqlp.h"
 
-const char *parse_status_type_to_string(parse_status_type status_type);
-
 struct placeholders placeholders_new();
 
 int placeholders_count(const struct placeholders *placeholders);

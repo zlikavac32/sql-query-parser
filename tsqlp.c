@@ -1194,19 +1194,6 @@ parse_stmt(struct lexer *lexer, struct parse_result *parse_result, struct parse_
     return PARSE_OK;
 }
 
-const char *parse_status_type_to_string(parse_status_type status_type) {
-    switch (status_type) {
-        case PARSE_OK:
-            return "PARSE_OK";
-        case PARSE_INVALID_SYNTAX:
-            return "PARSE_INVALID_SYNTAX";
-        case PARSE_ERROR_INVALID_ARGUMENT:
-            return "PARSE_ERROR_INVALID_ARGUMENT";
-        default:
-            return "UNKNOWN";
-    }
-}
-
 struct placeholders placeholders_new() {
     return (struct placeholders) {
         .locations = NULL,
@@ -1424,6 +1411,15 @@ void tsql_parse_result_free(struct parse_result *parse_result) {
     free(parse_result);
 }
 
-extern const char *tsqlp_parse_status_to_message(parse_status_type status_type) {
-    return parse_status_type_to_string(status_type);
+const char *tsqlp_parse_status_to_message(parse_status_type status_type) {
+    switch (status_type) {
+        case PARSE_OK:
+            return "PARSE_OK";
+        case PARSE_INVALID_SYNTAX:
+            return "PARSE_INVALID_SYNTAX";
+        case PARSE_ERROR_INVALID_ARGUMENT:
+            return "PARSE_ERROR_INVALID_ARGUMENT";
+        default:
+            return "UNKNOWN";
+    }
 }
