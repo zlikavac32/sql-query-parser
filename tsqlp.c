@@ -1279,41 +1279,6 @@ void sql_section_destroy(struct sql_section *sql_section) {
     placeholders_destroy(&sql_section->placeholders);
 }
 
-struct parse_result parse_result_new() {
-    struct parse_result parse_result;
-
-    parse_result.modifiers = sql_section_new();
-    parse_result.columns = sql_section_new();
-    parse_result.first_into = sql_section_new();
-    parse_result.tables = sql_section_new();
-    parse_result.where = sql_section_new();
-    parse_result.group_by = sql_section_new();
-    parse_result.having = sql_section_new();
-    parse_result.order_by = sql_section_new();
-    parse_result.limit = sql_section_new();
-    parse_result.procedure = sql_section_new();
-    parse_result.second_into = sql_section_new();
-    parse_result.flags = sql_section_new();
-
-    return parse_result;
-}
-
-
-void parse_result_destroy(struct parse_result *parse_result) {
-    sql_section_destroy(&parse_result->modifiers);
-    sql_section_destroy(&parse_result->columns);
-    sql_section_destroy(&parse_result->first_into);
-    sql_section_destroy(&parse_result->tables);
-    sql_section_destroy(&parse_result->where);
-    sql_section_destroy(&parse_result->group_by);
-    sql_section_destroy(&parse_result->having);
-    sql_section_destroy(&parse_result->order_by);
-    sql_section_destroy(&parse_result->limit);
-    sql_section_destroy(&parse_result->procedure);
-    sql_section_destroy(&parse_result->second_into);
-    sql_section_destroy(&parse_result->flags);
-}
-
 void parse_result_serialize(struct parse_result *parse_result, FILE *file) {
 
 #define PRINT_SECTION(section) \
@@ -1395,9 +1360,18 @@ struct parse_result *tsqlp_parse_result_new() {
         return NULL;
     }
 
-    struct parse_result initialized_parse_result = parse_result_new();
-
-    memcpy(parse_result, &initialized_parse_result, sizeof(struct parse_result));
+    parse_result->modifiers = sql_section_new();
+    parse_result->columns = sql_section_new();
+    parse_result->first_into = sql_section_new();
+    parse_result->tables = sql_section_new();
+    parse_result->where = sql_section_new();
+    parse_result->group_by = sql_section_new();
+    parse_result->having = sql_section_new();
+    parse_result->order_by = sql_section_new();
+    parse_result->limit = sql_section_new();
+    parse_result->procedure = sql_section_new();
+    parse_result->second_into = sql_section_new();
+    parse_result->flags = sql_section_new();
 
     return parse_result;
 }
@@ -1407,7 +1381,19 @@ unsigned int tsqlp_api_version() {
 }
 
 void tsql_parse_result_free(struct parse_result *parse_result) {
-    parse_result_destroy(parse_result);
+    sql_section_destroy(&parse_result->modifiers);
+    sql_section_destroy(&parse_result->columns);
+    sql_section_destroy(&parse_result->first_into);
+    sql_section_destroy(&parse_result->tables);
+    sql_section_destroy(&parse_result->where);
+    sql_section_destroy(&parse_result->group_by);
+    sql_section_destroy(&parse_result->having);
+    sql_section_destroy(&parse_result->order_by);
+    sql_section_destroy(&parse_result->limit);
+    sql_section_destroy(&parse_result->procedure);
+    sql_section_destroy(&parse_result->second_into);
+    sql_section_destroy(&parse_result->flags);
+
     free(parse_result);
 }
 

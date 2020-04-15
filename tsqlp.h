@@ -16,11 +16,7 @@ void placeholders_push(struct placeholders *placeholders, size_t location);
 
 void placeholders_destroy(struct placeholders *placeholders);
 
-struct parse_result parse_result_new();
-
 void parse_result_serialize(struct parse_result *parse_result, FILE *file);
-
-void parse_result_destroy(struct parse_result *parse_result);
 
 struct sql_section sql_section_new();
 
