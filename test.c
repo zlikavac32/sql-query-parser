@@ -4,6 +4,21 @@
 
 #include "tsqlp.h"
 
+typedef enum {
+    SECTION_MODIFIERS = 1,
+    SECTION_COLUMNS,
+    SECTION_FIRST_INTO,
+    SECTION_TABLES,
+    SECTION_WHERE,
+    SECTION_GROUP_BY,
+    SECTION_HAVING,
+    SECTION_ORDER_BY,
+    SECTION_LIMIT,
+    SECTION_PROCEDURE,
+    SECTION_SECOND_INTO,
+    SECTION_FLAGS,
+} sql_section_type;
+
 Test(tsqlp_parse, error_is_returned_when_sql_is_null) {
     struct parse_result parse_result = parse_result_new();
 

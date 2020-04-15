@@ -6,21 +6,6 @@
 
 #include "lib/tsqlp.h"
 
-typedef enum {
-    SECTION_MODIFIERS = 1,
-    SECTION_COLUMNS,
-    SECTION_FIRST_INTO,
-    SECTION_TABLES,
-    SECTION_WHERE,
-    SECTION_GROUP_BY,
-    SECTION_HAVING,
-    SECTION_ORDER_BY,
-    SECTION_LIMIT,
-    SECTION_PROCEDURE,
-    SECTION_SECOND_INTO,
-    SECTION_FLAGS,
-} sql_section_type;
-
 const char *parse_status_type_to_string(parse_status_type status_type);
 
 struct placeholders placeholders_new();
