@@ -20,15 +20,15 @@ typedef enum {
 } sql_section_type;
 
 Test(tsqlp_parse, error_is_returned_when_sql_is_null) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(tsqlp_parse(NULL, 0, parse_result), PARSE_ERROR_INVALID_ARGUMENT);
+    cr_assert_eq(tsqlp_parse(NULL, 0, parse_result), TSQLP_PARSE_ERROR_INVALID_ARGUMENT);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 void
-parse_result_init_section(sql_section_type section_name, struct sql_section section, struct parse_result *parse_result) {
+parse_result_init_section(sql_section_type section_name, struct tsqlp_sql_section section, struct tsqlp_parse_result *parse_result) {
 
 #define MAKE_SECTION(name, section_property) \
     do { \
@@ -53,8 +53,8 @@ parse_result_init_section(sql_section_type section_name, struct sql_section sect
     MAKE_SECTION(SECTION_FLAGS, flags);
 }
 
-struct parse_result *make_parse_result(sql_section_type section_name, struct sql_section section, ...) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+struct tsqlp_parse_result *make_parse_result(sql_section_type section_name, struct tsqlp_sql_section section, ...) {
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     parse_result_init_section(section_name, section, parse_result);
 
@@ -67,17 +67,17 @@ struct parse_result *make_parse_result(sql_section_type section_name, struct sql
             break;
         }
 
-        parse_result_init_section(section_name, va_arg(arg_pointer, struct sql_section), parse_result);
+        parse_result_init_section(section_name, va_arg(arg_pointer, struct tsqlp_sql_section), parse_result);
     }
     va_end(arg_pointer);
 
     return parse_result;
 }
 
-static struct sql_section sql_section_new_from_string(char *chunk, size_t placeholder_count, ...) {
-    struct sql_section section = sql_section_new();
+static struct tsqlp_sql_section sql_section_new_from_string(char *chunk, size_t placeholder_count, ...) {
+    struct tsqlp_sql_section section = sql_section_new();
 
-    struct placeholders placeholders = placeholders_new();
+    struct tsqlp_placeholders placeholders = placeholders_new();
 
     va_list arg_pointer;
     va_start(arg_pointer, placeholder_count);
@@ -93,7 +93,7 @@ static struct sql_section sql_section_new_from_string(char *chunk, size_t placeh
     return section;
 }
 
-void assert_parse_result_eq(struct parse_result *got, struct parse_result *expected) {
+void assert_parse_result_eq(struct tsqlp_parse_result *got, struct tsqlp_parse_result *expected) {
 #define ASSERT_SECTION(section) \
     do { \
         cr_assert_eq(got->section.placeholders.count, expected->section.placeholders.count); \
@@ -117,78 +117,78 @@ void assert_parse_result_eq(struct parse_result *got, struct parse_result *expec
     ASSERT_SECTION(second_into);
     ASSERT_SECTION(flags);
 
-    tsql_parse_result_free(expected);
+    tsqlp_parse_result_free(expected);
 }
 
 #define PARSE_SQL_STR(sql, parse_result) tsqlp_parse(sql, strlen(sql), parse_result)
 
 Test(tsqlp_parse, invalid_syntax) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT ", parse_result), PARSE_INVALID_SYNTAX);
+    cr_assert_eq(PARSE_SQL_STR("SELECT ", parse_result), TSQLP_PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1, ", parse_result), PARSE_INVALID_SYNTAX);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1, ", parse_result), TSQLP_PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT ??", parse_result), PARSE_INVALID_SYNTAX);
+    cr_assert_eq(PARSE_SQL_STR("SELECT ??", parse_result), TSQLP_PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT \"\\\"", parse_result), PARSE_INVALID_SYNTAX);
+    cr_assert_eq(PARSE_SQL_STR("SELECT \"\\\"", parse_result), TSQLP_PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT '\\'", parse_result), PARSE_INVALID_SYNTAX);
+    cr_assert_eq(PARSE_SQL_STR("SELECT '\\'", parse_result), TSQLP_PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT d.d.d.d", parse_result), PARSE_INVALID_SYNTAX);
+    cr_assert_eq(PARSE_SQL_STR("SELECT d.d.d.d", parse_result), TSQLP_PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT INTERVAL 3", parse_result), PARSE_INVALID_SYNTAX);
+    cr_assert_eq(PARSE_SQL_STR("SELECT INTERVAL 3", parse_result), TSQLP_PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT CASE 1 THEN", parse_result), PARSE_INVALID_SYNTAX);
+    cr_assert_eq(PARSE_SQL_STR("SELECT CASE 1 THEN", parse_result), TSQLP_PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT MATCH(f) AGAINST", parse_result), PARSE_INVALID_SYNTAX);
+    cr_assert_eq(PARSE_SQL_STR("SELECT MATCH(f) AGAINST", parse_result), TSQLP_PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 +", parse_result), PARSE_INVALID_SYNTAX);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 +", parse_result), TSQLP_PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 ORDER BY ", parse_result), PARSE_INVALID_SYNTAX);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 ORDER BY ", parse_result), TSQLP_PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 GROUP BY ", parse_result), PARSE_INVALID_SYNTAX);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 GROUP BY ", parse_result), TSQLP_PARSE_INVALID_SYNTAX);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, select_a_number) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -198,13 +198,13 @@ Test(tsqlp_parse, select_a_number) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, case_insensitive) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("seLEcT 1", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("seLEcT 1", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -214,13 +214,13 @@ Test(tsqlp_parse, case_insensitive) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, select_a_placeholder) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT ?", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT ?", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -230,14 +230,14 @@ Test(tsqlp_parse, select_a_placeholder) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 
 Test(tsqlp_parse, select_a_comma_delimited_columns) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1, ?, 22, ?", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1, ?, 22, ?", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -247,13 +247,13 @@ Test(tsqlp_parse, select_a_comma_delimited_columns) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, select_subquery) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT ?, (SELECT ?, (SELECT ?, 1))", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT ?, (SELECT ?, (SELECT ?, 1))", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -263,13 +263,13 @@ Test(tsqlp_parse, select_subquery) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, query_modifiers) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT ALL 1", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT ALL 1", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -280,10 +280,10 @@ Test(tsqlp_parse, query_modifiers) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT DISTINCT SQL_BUFFER_RESULT 1", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT DISTINCT SQL_BUFFER_RESULT 1", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -294,10 +294,10 @@ Test(tsqlp_parse, query_modifiers) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT DISTINCTROW HIGH_PRIORITY 1", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT DISTINCTROW HIGH_PRIORITY 1", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -308,14 +308,14 @@ Test(tsqlp_parse, query_modifiers) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
     cr_assert_eq(
-        PARSE_SQL_STR(
+    PARSE_SQL_STR(
             "SELECT HIGH_PRIORITY STRAIGHT_JOIN SQL_SMALL_RESULT SQL_BIG_RESULT SQL_CACHE 1", parse_result
         ),
-        PARSE_OK
+    TSQLP_PARSE_OK
     );
 
     assert_parse_result_eq(
@@ -327,17 +327,17 @@ Test(tsqlp_parse, query_modifiers) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, unary_operators) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     cr_assert_eq(
-        PARSE_SQL_STR(
+    PARSE_SQL_STR(
             "SELECT +1, -1, ~1, !1, BINARY 2, BINARY -2, NOT 2", parse_result
         ),
-        PARSE_OK
+    TSQLP_PARSE_OK
     );
 
     assert_parse_result_eq(
@@ -348,13 +348,13 @@ Test(tsqlp_parse, unary_operators) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, expression_in_parenthesis) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1, (1), ((1)), (((+1))), (((?)))", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1, (1), ((1)), (((+1))), (((?)))", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -364,14 +364,14 @@ Test(tsqlp_parse, expression_in_parenthesis) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 
 Test(tsqlp_parse, exists) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT EXISTS (SELECT ?)", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT EXISTS (SELECT ?)", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -381,18 +381,18 @@ Test(tsqlp_parse, exists) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, literals) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     cr_assert_eq(
-        PARSE_SQL_STR(
+    PARSE_SQL_STR(
             "SELECT 1, NULL, TRUE, FALSE, b'0', b'1', b'101001', 0xa, 0xA, x'1b'",
             parse_result
         ),
-        PARSE_OK
+    TSQLP_PARSE_OK
     );
 
     assert_parse_result_eq(
@@ -404,15 +404,15 @@ Test(tsqlp_parse, literals) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
     cr_assert_eq(
-        PARSE_SQL_STR(
+    PARSE_SQL_STR(
             "SELECT 0.0, .0, 0., 00.00, 1e12, .1e-12, 1.1e+12, 2.2e1",
             parse_result
         ),
-        PARSE_OK
+    TSQLP_PARSE_OK
     );
 
     assert_parse_result_eq(
@@ -423,12 +423,12 @@ Test(tsqlp_parse, literals) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR(
         "SELECT '', 'foo', '\\'', 'f \\' ', \"\", \"foo\", \"\\\"\", \"f \\\" \", 'a''b', 'a'  'b', \"a\"\"b\", \"a\"  \"b\"",
-        parse_result), PARSE_OK);
+        parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -438,11 +438,11 @@ Test(tsqlp_parse, literals) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
     // @todo: check if these multiple charset literals are valid
-    cr_assert_eq(PARSE_SQL_STR("SELECT utf8'f' utf8'g' 'c', utf8\"f\" utf8\"c\"", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT utf8'f' utf8'g' 'c', utf8\"f\" utf8\"c\"", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -452,10 +452,10 @@ Test(tsqlp_parse, literals) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT '' COLLATE demo, '' COLLATE bar", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT '' COLLATE demo, '' COLLATE bar", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -465,10 +465,10 @@ Test(tsqlp_parse, literals) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT DATE 'd', TIME 'time', TIMESTAMP 'timestamp'", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT DATE 'd', TIME 'time', TIMESTAMP 'timestamp'", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -478,13 +478,13 @@ Test(tsqlp_parse, literals) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, colum_name) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT d, `d`, `d.d`, `*`, *, d.d, d.d.d, d.*, d.d.*, _d, $d", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT d, `d`, `d.d`, `*`, *, d.d, d.d.d, d.*, d.d.*, _d, $d", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -494,16 +494,16 @@ Test(tsqlp_parse, colum_name) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 
 Test(tsqlp_parse, interval_expression) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     cr_assert_eq(
         PARSE_SQL_STR("SELECT INTERVAL 3 YEAR, INTERVAL -3 YEAR_MONTH, INTERVAL (SELECT 1) DAY", parse_result),
-        PARSE_OK);
+        TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -514,15 +514,15 @@ Test(tsqlp_parse, interval_expression) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, case_expression) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR(
         "SELECT CASE 1 WHEN 1 THEN 2 END, CASE WHEN 1 THEN 2 END, CASE 1 WHEN 1 THEN 2 WHEN 3 THEN 4 ELSE 5 END, CASE WHEN 1 THEN 2 WHEN 3 THEN 4 ELSE 5 END",
-        parse_result), PARSE_OK);
+        parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -532,11 +532,11 @@ Test(tsqlp_parse, case_expression) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, match_against) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     const char *sql = "SELECT "
                       "MATCH(f) AGAINST ('c'), "
@@ -545,7 +545,7 @@ Test(tsqlp_parse, match_against) {
                       "MATCH(f) AGAINST ('c' IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION), "
                       "MATCH(f) AGAINST ('c' IN NATURAL LANGUAGE MODE)";
 
-    cr_assert_eq(PARSE_SQL_STR(sql, parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR(sql, parse_result), TSQLP_PARSE_OK);
 
     char *expected = "MATCH(f) AGAINST ('c'), "
                      "MATCH(f, b) AGAINST ('c' WITH QUERY EXPANSION), "
@@ -561,13 +561,13 @@ Test(tsqlp_parse, match_against) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, procedure_call) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT F(), f(), f(1), f(1, NULL, 'str'), f((SELECT 1))", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT F(), f(), f(1), f(1, NULL, 'str'), f((SELECT 1))", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -577,13 +577,13 @@ Test(tsqlp_parse, procedure_call) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, row_statement) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT ROW (1), ROW ((SELECT 1), 2)", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT ROW (1), ROW ((SELECT 1), 2)", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -593,13 +593,13 @@ Test(tsqlp_parse, row_statement) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, expression_list) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT (1), (1, 2, (SELECT 1))", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT (1), (1, 2, (SELECT 1))", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -609,15 +609,15 @@ Test(tsqlp_parse, expression_list) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, arithmetic_and_bitwise_expression) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR(
         "SELECT 1 | 2, 1 & 2, 1 << 2, 1 >> 2, (1) + 2, 1 - 2, 1 * 2, 1 / 2, 1 DIV 2, 1 MOD 2, 1 % 2, 1 ^ 2, 2 COLLATE demo",
-        parse_result), PARSE_OK);
+        parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -627,11 +627,11 @@ Test(tsqlp_parse, arithmetic_and_bitwise_expression) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, predicate_expression) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     const char *sql = "SELECT "
                       "'bar' SOUNDS LIKE 'foo', "
@@ -646,7 +646,7 @@ Test(tsqlp_parse, predicate_expression) {
                       "c NOT IN (1, 2, 3), "
                       "c IN (SELECT 1)";
 
-    cr_assert_eq(PARSE_SQL_STR(sql, parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR(sql, parse_result), TSQLP_PARSE_OK);
 
     char *expected = "'bar' SOUNDS LIKE 'foo', "
                      "c REGEXP `b`, "
@@ -668,12 +668,12 @@ Test(tsqlp_parse, predicate_expression) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 
 Test(tsqlp_parse, expression) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     const char *sql = "SELECT "
                       "NOT 2, "
@@ -699,7 +699,7 @@ Test(tsqlp_parse, expression) {
                       "5 = 9, "
                       "6 != 0";
 
-    cr_assert_eq(PARSE_SQL_STR(sql, parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR(sql, parse_result), TSQLP_PARSE_OK);
 
     char *expected = "NOT 2, "
                      "! 2, "
@@ -732,13 +732,13 @@ Test(tsqlp_parse, expression) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, column_alias) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 demo, 1 AS demo, SUM(1 + 2) `bar`", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 demo, 1 AS demo, SUM(1 + 2) `bar`", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -748,13 +748,13 @@ Test(tsqlp_parse, column_alias) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, first_into) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO DUMPFILE 'bar'", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO DUMPFILE 'bar'", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -765,10 +765,10 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO @var", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO @var", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -779,10 +779,10 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO @var, @other_var, @also_var", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO @var, @other_var, @also_var", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -793,10 +793,10 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO OUTFILE 'bar'", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO OUTFILE 'bar'", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -807,10 +807,10 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO OUTFILE 'bar' CHARACTER SET demo", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 INTO OUTFILE 'bar' CHARACTER SET demo", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -821,12 +821,12 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
     cr_assert_eq(
         PARSE_SQL_STR("SELECT 1 INTO OUTFILE 'bar' FIELDS TERMINATED BY 'd' LINES STARTING BY 'g'", parse_result),
-        PARSE_OK);
+        TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -837,12 +837,12 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
     cr_assert_eq(PARSE_SQL_STR(
         "SELECT 1 INTO OUTFILE 'bar' COLUMNS TERMINATED BY 'd' OPTIONALLY ENCLOSED BY 'g' ESCAPED BY 'f' LINES STARTING BY 'g' TERMINATED BY 'h'",
-        parse_result), PARSE_OK);
+        parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -854,12 +854,12 @@ Test(tsqlp_parse, first_into) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 
 Test(tsqlp_parse, from_table) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     const char *sql = "SELECT 1 FROM "
                       "t, "
@@ -885,7 +885,7 @@ Test(tsqlp_parse, from_table) {
                       "d FORCE INDEX FOR GROUP BY (g), "
                       "d FORCE KEY FOR GROUP BY (g)";
 
-    cr_assert_eq(PARSE_SQL_STR(sql, parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR(sql, parse_result), TSQLP_PARSE_OK);
 
     char *expected = "t, "
                      "t.t, "
@@ -919,12 +919,12 @@ Test(tsqlp_parse, from_table) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 
 Test(tsqlp_parse, join_table) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     const char *sql = "SELECT 1 FROM "
                       "t NATURAL JOIN b, "
@@ -946,7 +946,7 @@ Test(tsqlp_parse, join_table) {
                       "t JOIN other AS t1 ON 2 = d LEFT JOIN other ON 2, "
                       "t NATURAL JOIN b NATURAL JOIN c";
 
-    cr_assert_eq(PARSE_SQL_STR(sql, parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR(sql, parse_result), TSQLP_PARSE_OK);
 
     char *expected = "t NATURAL JOIN b, "
                      "t NATURAL INNER JOIN b, "
@@ -976,13 +976,13 @@ Test(tsqlp_parse, join_table) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, where) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t WHERE a = 1 AND b = (SELECT ?)", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t WHERE a = 1 AND b = (SELECT ?)", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -994,13 +994,13 @@ Test(tsqlp_parse, where) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, group_by) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t GROUP BY f, `f` ASC, f.f DESC, 2, ?, ? ASC, SUM(1)", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t GROUP BY f, `f` ASC, f.f DESC, 2, ?, ? ASC, SUM(1)", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1012,13 +1012,13 @@ Test(tsqlp_parse, group_by) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, having) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t HAVING a = 1 AND b = (SELECT ?)", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t HAVING a = 1 AND b = (SELECT ?)", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1030,13 +1030,13 @@ Test(tsqlp_parse, having) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, order_by) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t ORDER BY f, `f` ASC, f.f DESC, 2, ?, SUM(1)", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t ORDER BY f, `f` ASC, f.f DESC, 2, ?, SUM(1)", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1048,13 +1048,13 @@ Test(tsqlp_parse, order_by) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, limit) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t LIMIT 1", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t LIMIT 1", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1066,10 +1066,10 @@ Test(tsqlp_parse, limit) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t LIMIT ? 1", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t LIMIT ? 1", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1081,10 +1081,10 @@ Test(tsqlp_parse, limit) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t LIMIT ? OFFSET ?", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t LIMIT ? OFFSET ?", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1096,10 +1096,10 @@ Test(tsqlp_parse, limit) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t LIMIT 2, 4", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t LIMIT 2, 4", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1111,13 +1111,13 @@ Test(tsqlp_parse, limit) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, procedure) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t PROCEDURE a()", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t PROCEDURE a()", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1129,10 +1129,10 @@ Test(tsqlp_parse, procedure) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t PROCEDURE a(?, 1 + ?, (SELECT 1))", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t PROCEDURE a(?, 1 + ?, (SELECT 1))", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1144,13 +1144,13 @@ Test(tsqlp_parse, procedure) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, second_into) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t INTO DUMPFILE 'bar'", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FROM t INTO DUMPFILE 'bar'", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1162,13 +1162,13 @@ Test(tsqlp_parse, second_into) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, flags) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FOR UPDATE", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 FOR UPDATE", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1179,10 +1179,10 @@ Test(tsqlp_parse, flags) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
     parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(PARSE_SQL_STR("SELECT 1 LOCK IN SHARE MODE", parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR("SELECT 1 LOCK IN SHARE MODE", parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1193,11 +1193,11 @@ Test(tsqlp_parse, flags) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, complete_example) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     const char *sql = "SELECT DISTINCT HIGH_PRIORITY "
                       "id, PI() pi, (SELECT COUNT(*) c FROM l WHERE g = ?) AS bar "
@@ -1211,7 +1211,7 @@ Test(tsqlp_parse, complete_example) {
                       "INTO @var, @other_var "
                       "FOR UPDATE";
 
-    cr_assert_eq(PARSE_SQL_STR(sql, parse_result), PARSE_OK);
+    cr_assert_eq(PARSE_SQL_STR(sql, parse_result), TSQLP_PARSE_OK);
 
     assert_parse_result_eq(
         parse_result,
@@ -1231,23 +1231,23 @@ Test(tsqlp_parse, complete_example) {
         )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, parse_status_string) {
-    cr_assert_str_eq(tsqlp_parse_status_to_message(PARSE_OK), "PARSE_OK");
-    cr_assert_str_eq(tsqlp_parse_status_to_message(PARSE_ERROR_INVALID_ARGUMENT), "PARSE_ERROR_INVALID_ARGUMENT");
-    cr_assert_str_eq(tsqlp_parse_status_to_message(PARSE_INVALID_SYNTAX), "PARSE_INVALID_SYNTAX");
+    cr_assert_str_eq(tsqlp_parse_status_to_message(TSQLP_PARSE_OK), "PARSE_OK");
+    cr_assert_str_eq(tsqlp_parse_status_to_message(TSQLP_PARSE_ERROR_INVALID_ARGUMENT), "PARSE_ERROR_INVALID_ARGUMENT");
+    cr_assert_str_eq(tsqlp_parse_status_to_message(TSQLP_PARSE_INVALID_SYNTAX), "PARSE_INVALID_SYNTAX");
     cr_assert_str_eq(tsqlp_parse_status_to_message(3232323), "UNKNOWN");
 }
 
 Test(tsqlp_parse, tsqlp_parse_result_serialize) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     sql_section_update("*", strlen("*"), placeholders_new(), &parse_result->columns);
     sql_section_update("table t", strlen("table t"), placeholders_new(), &parse_result->tables);
 
-    struct placeholders where_placeholders = placeholders_new();
+    struct tsqlp_placeholders where_placeholders = placeholders_new();
     placeholders_push(&where_placeholders, 4);
     sql_section_update("a = ?", strlen("a = ?"), where_placeholders, &parse_result->where);
 
@@ -1266,11 +1266,11 @@ Test(tsqlp_parse, tsqlp_parse_result_serialize) {
 
     cr_assert_str_eq(buff, expected);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, tsqlp_parse_result_serialize_full) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     sql_section_update("DISTINCT SQL_CACHE", strlen("DISTINCT SQL_CACHE"), placeholders_new(), &parse_result->modifiers);
     sql_section_update("id, SUM(money) m", strlen("id, SUM(money) n"), placeholders_new(), &parse_result->columns);
@@ -1304,17 +1304,17 @@ Test(tsqlp_parse, tsqlp_parse_result_serialize_full) {
 
     cr_assert_str_eq(buff, expected);
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
 
 Test(tsqlp_parse, placeholder_as_table_name) {
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     cr_assert_eq(
-            PARSE_SQL_STR(
+    PARSE_SQL_STR(
                     "SELECT 1 FROM ?", parse_result
             ),
-            PARSE_OK
+    TSQLP_PARSE_OK
     );
 
     assert_parse_result_eq(
@@ -1326,15 +1326,15 @@ Test(tsqlp_parse, placeholder_as_table_name) {
             )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 
     parse_result = tsqlp_parse_result_new();
 
     cr_assert_eq(
-            PARSE_SQL_STR(
+    PARSE_SQL_STR(
                     "SELECT 1 FROM t LEFT JOIN ? ON 1", parse_result
             ),
-            PARSE_OK
+    TSQLP_PARSE_OK
     );
 
     assert_parse_result_eq(
@@ -1346,5 +1346,5 @@ Test(tsqlp_parse, placeholder_as_table_name) {
             )
     );
 
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_free(parse_result);
 }
