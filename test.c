@@ -1241,7 +1241,7 @@ Test(tsqlp_parse, parse_status_string) {
     cr_assert_str_eq(tsqlp_parse_status_to_message(3232323), "UNKNOWN");
 }
 
-Test(tsqlp_parse, parse_result_serialize) {
+Test(tsqlp_parse, tsqlp_parse_result_serialize) {
     struct parse_result *parse_result = tsqlp_parse_result_new();
 
     sql_section_update("*", strlen("*"), placeholders_new(), &parse_result->columns);
@@ -1255,7 +1255,7 @@ Test(tsqlp_parse, parse_result_serialize) {
     char buff[EXPECTED_BUFF_LEN + 1];
     FILE *out_file = fmemopen((void *) buff, EXPECTED_BUFF_LEN, "w");
 
-    parse_result_serialize(parse_result, out_file);
+    tsqlp_parse_result_serialize(parse_result, out_file);
 
     buff[ftell(out_file)] = '\0';
     fclose(out_file);
@@ -1269,7 +1269,7 @@ Test(tsqlp_parse, parse_result_serialize) {
     tsql_parse_result_free(parse_result);
 }
 
-Test(tsqlp_parse, parse_result_serialize_full) {
+Test(tsqlp_parse, tsqlp_parse_result_serialize_full) {
     struct parse_result *parse_result = tsqlp_parse_result_new();
 
     sql_section_update("DISTINCT SQL_CACHE", strlen("DISTINCT SQL_CACHE"), placeholders_new(), &parse_result->modifiers);
@@ -1287,7 +1287,7 @@ Test(tsqlp_parse, parse_result_serialize_full) {
     char buff[EXPECTED_BUFF_LEN + 1];
     FILE *out_file = fmemopen((void *) buff, EXPECTED_BUFF_LEN, "w");
 
-    parse_result_serialize(parse_result, out_file);
+    tsqlp_parse_result_serialize(parse_result, out_file);
 
     buff[ftell(out_file)] = '\0';
     fclose(out_file);

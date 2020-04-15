@@ -3,6 +3,8 @@
 
 #define API_VERSION 1
 
+#include <stdio.h>
+
 struct placeholders {
     size_t *locations;
     size_t count;
@@ -42,6 +44,8 @@ parse_status_type tsqlp_parse(const char *sql, size_t len, struct parse_result *
 void tsql_parse_result_free(struct parse_result *parse_result);
 
 const char *tsqlp_parse_status_to_message(parse_status_type status_type);
+
+void tsqlp_parse_result_serialize(struct parse_result *parse_result, FILE *file);
 
 unsigned int tsqlp_api_version();
 

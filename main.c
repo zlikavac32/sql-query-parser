@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
         exit(2);
     }
 
-    parse_result_serialize(parse_result, stdout);
+    tsqlp_parse_result_serialize(parse_result, stdout);
     tsql_parse_result_free(parse_result);
 
     return 0;

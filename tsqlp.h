@@ -2,7 +2,6 @@
 #define TSQLP_H
 
 #include <stdlib.h>
-#include <stdio.h>
 
 #include "lib/tsqlp.h"
 
@@ -15,8 +14,6 @@ size_t placeholders_position_at(const struct placeholders *placeholders, unsigne
 void placeholders_push(struct placeholders *placeholders, size_t location);
 
 void placeholders_destroy(struct placeholders *placeholders);
-
-void parse_result_serialize(struct parse_result *parse_result, FILE *file);
 
 struct sql_section sql_section_new();
 

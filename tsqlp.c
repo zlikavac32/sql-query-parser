@@ -1279,7 +1279,7 @@ void sql_section_destroy(struct sql_section *sql_section) {
     placeholders_destroy(&sql_section->placeholders);
 }
 
-void parse_result_serialize(struct parse_result *parse_result, FILE *file) {
+void tsqlp_parse_result_serialize(struct parse_result *parse_result, FILE *file) {
 
 #define PRINT_SECTION(section) \
     do { \
