@@ -1752,19 +1752,19 @@ size_t consumed_chars = 0;
 #define YY_NULL token_new(T_EOF, NULL, 0, consumed_chars)
 #define YY_DECL struct token lexer_lex()
 
+int yylex_destroy (void);
+void yyset_in(FILE *in);
+FILE *yyget_in();
 
 void lexer_use_buffer(const char *buff, size_t len) {
     FILE *f = fmemopen((void *) buff, len, "r");
     consumed_chars = 0;
-    yyin = f;
+    yyset_in(f);
 }
 
-extern int yylex_destroy (void);
-
 void lexer_clear_buffer() {
-    fclose(yyin);
+    fclose(yyget_in());
     yylex_destroy();
-    yyin = NULL;
 }
 
 #define RETURN_TOKEN_FOR(type) return token_new(type, yytext, yyleng, consumed_chars - yyleng)
