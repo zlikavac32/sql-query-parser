@@ -9,7 +9,12 @@ typedef enum {
     TSQLP_PARSE_OK = 32000,
     TSQLP_PARSE_ERROR_INVALID_ARGUMENT = 32001,
     TSQLP_PARSE_INVALID_SYNTAX = 32002,
+    TSQLP_PARSE_UNKNOWN_PLATFORM = 32003,
 } tsqlp_parse_status;
+
+typedef enum {
+    TSQLP_PLATFORM_MYSQL
+} tsqlp_platform;
 
 struct tsqlp_placeholders {
     size_t *locations;
@@ -39,7 +44,7 @@ struct tsqlp_parse_result {
 
 struct tsqlp_parse_result *tsqlp_parse_result_new();
 
-tsqlp_parse_status tsqlp_parse(const char *sql, size_t len, struct tsqlp_parse_result *parse_result);
+tsqlp_parse_status tsqlp_parse(const char *sql, size_t len, tsqlp_platform platform, struct tsqlp_parse_result *parse_result);
 
 void tsqlp_parse_result_free(struct tsqlp_parse_result *parse_result);
 

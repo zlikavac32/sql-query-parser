@@ -1334,23 +1334,29 @@ void *realloc_panic(void *ptr, size_t size) {
     return ptr;
 }
 
-tsqlp_parse_status tsqlp_parse(const char *sql, size_t len, struct tsqlp_parse_result *parse_result) {
+tsqlp_parse_status tsqlp_parse(const char *sql, size_t len, tsqlp_platform platform, struct tsqlp_parse_result *parse_result) {
     if (sql == NULL) {
         return TSQLP_PARSE_ERROR_INVALID_ARGUMENT;
     }
 
-    struct lexer lexer = lexer_new(sql, len);
-    struct parse_state parse_state = parse_state_new();
+    switch (platform) {
+        case TSQLP_PLATFORM_MYSQL: {
+            struct lexer lexer = lexer_new(sql, len);
+            struct parse_state parse_state = parse_state_new();
 
-    tsqlp_parse_status status = parse_stmt(&lexer, parse_result, &parse_state);
+            tsqlp_parse_status status = parse_stmt(&lexer, parse_result, &parse_state);
 
-    if (status == TSQLP_PARSE_OK && lexer_has(&lexer)) {
-        status = TSQLP_PARSE_INVALID_SYNTAX;
+            if (status == TSQLP_PARSE_OK && lexer_has(&lexer)) {
+                status = TSQLP_PARSE_INVALID_SYNTAX;
+            }
+
+            lexer_destroy(&lexer);
+
+            return status;
+        }
+        default:
+            return TSQLP_PARSE_UNKNOWN_PLATFORM;
     }
-
-    lexer_destroy(&lexer);
-
-    return status;
 }
 
 struct tsqlp_parse_result *tsqlp_parse_result_new() {

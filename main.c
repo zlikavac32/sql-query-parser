@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    tsqlp_parse_status parse_status = tsqlp_parse(sql, total_read_size, parse_result);
+    tsqlp_parse_status parse_status = tsqlp_parse(sql, total_read_size, TSQLP_PLATFORM_MYSQL, parse_result);
 
     free(sql);
 

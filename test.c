@@ -22,7 +22,15 @@ typedef enum {
 Test(tsqlp_parse, error_is_returned_when_sql_is_null) {
     struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(tsqlp_parse(NULL, 0, parse_result), TSQLP_PARSE_ERROR_INVALID_ARGUMENT);
+    cr_assert_eq(tsqlp_parse(NULL, 0, TSQLP_PLATFORM_MYSQL, parse_result), TSQLP_PARSE_ERROR_INVALID_ARGUMENT);
+
+    tsqlp_parse_result_free(parse_result);
+}
+
+Test(tsqlp_parse, error_is_returned_when_platform_is_unknown) {
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
+
+    cr_assert_eq(tsqlp_parse("", 0, 3264, parse_result), TSQLP_PARSE_UNKNOWN_PLATFORM);
 
     tsqlp_parse_result_free(parse_result);
 }
@@ -120,7 +128,7 @@ void assert_parse_result_eq(struct tsqlp_parse_result *got, struct tsqlp_parse_r
     tsqlp_parse_result_free(expected);
 }
 
-#define PARSE_SQL_STR(sql, parse_result) tsqlp_parse(sql, strlen(sql), parse_result)
+#define PARSE_SQL_STR(sql, parse_result) tsqlp_parse(sql, strlen(sql), TSQLP_PLATFORM_MYSQL, parse_result)
 
 Test(tsqlp_parse, invalid_syntax) {
     struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
