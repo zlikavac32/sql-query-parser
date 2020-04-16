@@ -22,7 +22,7 @@ typedef enum {
 Test(tsqlp_parse, error_is_returned_when_sql_is_null) {
     struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    cr_assert_eq(tsqlp_parse(NULL, 0, TSQLP_PLATFORM_MYSQL, parse_result), TSQLP_PARSE_ERROR_INVALID_ARGUMENT);
+    cr_assert_eq(tsqlp_parse(NULL, 0, TSQLP_PLATFORM_MYSQL, parse_result), TSQLP_PARSE_STRING_IS_NULL);
 
     tsqlp_parse_result_free(parse_result);
 }
@@ -1244,7 +1244,7 @@ Test(tsqlp_parse, complete_example) {
 
 Test(tsqlp_parse, parse_status_string) {
     cr_assert_str_eq(tsqlp_parse_status_to_message(TSQLP_PARSE_OK), "PARSE_OK");
-    cr_assert_str_eq(tsqlp_parse_status_to_message(TSQLP_PARSE_ERROR_INVALID_ARGUMENT), "PARSE_ERROR_INVALID_ARGUMENT");
+    cr_assert_str_eq(tsqlp_parse_status_to_message(TSQLP_PARSE_STRING_IS_NULL), "PARSE_ERROR_INVALID_ARGUMENT");
     cr_assert_str_eq(tsqlp_parse_status_to_message(TSQLP_PARSE_INVALID_SYNTAX), "PARSE_INVALID_SYNTAX");
     cr_assert_str_eq(tsqlp_parse_status_to_message(3232323), "UNKNOWN");
 }

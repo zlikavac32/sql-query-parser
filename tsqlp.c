@@ -1353,7 +1353,7 @@ static tsqlp_parse_status tsqlp_parse_mysql(const char *sql, size_t len, struct 
 
 tsqlp_parse_status tsqlp_parse(const char *sql, size_t len, tsqlp_platform platform, struct tsqlp_parse_result *parse_result) {
     if (sql == NULL) {
-        return TSQLP_PARSE_ERROR_INVALID_ARGUMENT;
+        return TSQLP_PARSE_STRING_IS_NULL;
     }
 
     switch (platform) {
@@ -1414,7 +1414,7 @@ const char *tsqlp_parse_status_to_message(tsqlp_parse_status parse_status) {
             return "PARSE_OK";
         case TSQLP_PARSE_INVALID_SYNTAX:
             return "PARSE_INVALID_SYNTAX";
-        case TSQLP_PARSE_ERROR_INVALID_ARGUMENT:
+        case TSQLP_PARSE_STRING_IS_NULL:
             return "PARSE_ERROR_INVALID_ARGUMENT";
         default:
             return "UNKNOWN";
