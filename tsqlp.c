@@ -1207,11 +1207,11 @@ void placeholders_push(struct tsqlp_placeholders *placeholders, size_t location)
     placeholders->locations[placeholders->count++] = location;
 }
 
-int placeholders_count(const struct tsqlp_placeholders *placeholders) {
+int tsqlp_placeholders_count(const struct tsqlp_placeholders *placeholders) {
     return placeholders->count;
 }
 
-size_t placeholders_position_at(const struct tsqlp_placeholders *placeholders, unsigned int index) {
+size_t tsqlp_placeholders_position_at(const struct tsqlp_placeholders *placeholders, unsigned int index) {
     if (index < placeholders->count) {
         return placeholders->locations[index];
     }
@@ -1236,19 +1236,19 @@ struct tsqlp_sql_section sql_section_new() {
     };
 }
 
-size_t sql_section_length(const struct tsqlp_sql_section *sql_section) {
+size_t tsqlp_sql_section_length(const struct tsqlp_sql_section *sql_section) {
     return sql_section->len;
 }
 
-const char *sql_section_content(const struct tsqlp_sql_section *sql_section) {
+const char *tsqlp_sql_section_content(const struct tsqlp_sql_section *sql_section) {
     return sql_section->chunk;
 }
 
-int sql_section_is_populated(const struct tsqlp_sql_section *sql_section) {
+int tsqlp_sql_section_is_populated(const struct tsqlp_sql_section *sql_section) {
     return sql_section->len > 0;
 }
 
-struct tsqlp_placeholders *sql_section_placeholders(struct tsqlp_sql_section *sql_section) {
+struct tsqlp_placeholders *tsqlp_sql_section_placeholders(struct tsqlp_sql_section *sql_section) {
     return &sql_section->placeholders;
 }
 
@@ -1283,17 +1283,17 @@ void tsqlp_parse_result_serialize(struct tsqlp_parse_result *parse_result, FILE 
 
 #define PRINT_SECTION(section) \
     do { \
-        if (sql_section_is_populated(&parse_result->section)) { \
-            struct tsqlp_placeholders *tsqlp_placeholders = sql_section_placeholders(&parse_result->section); \
-            size_t count = placeholders_count(tsqlp_placeholders); \
+        if (tsqlp_sql_section_is_populated(&parse_result->section)) { \
+            struct tsqlp_placeholders *tsqlp_placeholders = tsqlp_sql_section_placeholders(&parse_result->section); \
+            size_t count = tsqlp_placeholders_count(tsqlp_placeholders); \
             fprintf(file, "%s %ld ", #section, count); \
             \
             for (int i = 0; i < count; i++) { \
-                fprintf(file, "%ld ", placeholders_position_at(tsqlp_placeholders, i)); \
+                fprintf(file, "%ld ", tsqlp_placeholders_position_at(tsqlp_placeholders, i)); \
             } \
             \
-            fprintf(file, "%ld ", sql_section_length(&parse_result->section)); \
-            fwrite(sql_section_content(&parse_result->section), sql_section_length(&parse_result->section), 1, file); \
+            fprintf(file, "%ld ", tsqlp_sql_section_length(&parse_result->section)); \
+            fwrite(tsqlp_sql_section_content(&parse_result->section), tsqlp_sql_section_length(&parse_result->section), 1, file); \
             \
             fprintf(file, "\n"); \
         } \

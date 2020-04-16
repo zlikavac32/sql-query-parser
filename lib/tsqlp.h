@@ -47,6 +47,18 @@ const char *tsqlp_parse_status_to_message(tsqlp_parse_status parse_status);
 
 void tsqlp_parse_result_serialize(struct tsqlp_parse_result *parse_result, FILE *file);
 
+int tsqlp_placeholders_count(const struct tsqlp_placeholders *placeholders);
+
+size_t tsqlp_placeholders_position_at(const struct tsqlp_placeholders *placeholders, unsigned int index);
+
+struct tsqlp_placeholders *tsqlp_sql_section_placeholders(struct tsqlp_sql_section *sql_section);
+
+int tsqlp_sql_section_is_populated(const struct tsqlp_sql_section *sql_section);
+
+size_t tsqlp_sql_section_length(const struct tsqlp_sql_section *sql_section);
+
+const char *tsqlp_sql_section_content(const struct tsqlp_sql_section *sql_section);
+
 unsigned int tsqlp_api_version();
 
 #endif //SQL_QUERY_PARSER_TSQLP_H
