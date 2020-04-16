@@ -102,7 +102,7 @@ struct tsqlp_placeholders parse_state_finish_counting(struct parse_state *parse_
 
 struct parse_state parse_state_new() {
     return (struct parse_state) {
-        .placeholders =  placeholders_new(),
+        .placeholders =  tsqlp_placeholders_new(),
         .section_offset = 0,
         .is_tracking_in_progress = 0
     };
@@ -114,14 +114,14 @@ parse_state_type parse_state_start_counting(struct parse_state *parse_state, siz
     }
 
     parse_state->is_tracking_in_progress = 1;
-    parse_state->placeholders = placeholders_new();
+    parse_state->placeholders = tsqlp_placeholders_new();
     parse_state->section_offset = section_offset;
 
     return STARTED_TRACKING_PLACEHOLDERS;
 }
 
 void parse_state_register_placeholder(struct parse_state *parse_state, size_t location) {
-    placeholders_push(&parse_state->placeholders, location - parse_state->section_offset);
+    tsqlp_placeholders_push(&parse_state->placeholders, location - parse_state->section_offset);
 }
 
 struct tsqlp_placeholders parse_state_finish_counting(struct parse_state *parse_state) {
@@ -177,7 +177,7 @@ struct tsqlp_placeholders parse_state_finish_counting(struct parse_state *parse_
             struct tsqlp_placeholders tsqlp_placeholders = parse_state_finish_counting(parse_state); \
             \
             if (tokens_consumed < lexer_tokens_consumed(lexer)) { \
-                sql_section_update( \
+                tsqlp_sql_section_update( \
                     lexer_buffer(lexer) + position, \
                     token_position(lexer_peek_previous(lexer)) + token_length(lexer_peek_previous(lexer)) - position, \
                     tsqlp_placeholders, \
@@ -1194,14 +1194,14 @@ parse_stmt(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct 
     return TSQLP_PARSE_OK;
 }
 
-struct tsqlp_placeholders placeholders_new() {
+struct tsqlp_placeholders tsqlp_placeholders_new() {
     return (struct tsqlp_placeholders) {
         .locations = NULL,
         .count = 0
     };
 }
 
-void placeholders_push(struct tsqlp_placeholders *placeholders, size_t location) {
+void tsqlp_placeholders_push(struct tsqlp_placeholders *placeholders, size_t location) {
     placeholders->locations = (size_t *) realloc_panic(placeholders->locations,
                                                        (placeholders->count + 1) * sizeof(size_t));
     placeholders->locations[placeholders->count++] = location;
@@ -1219,13 +1219,13 @@ size_t tsqlp_placeholders_position_at(const struct tsqlp_placeholders *placehold
     return 0;
 }
 
-void placeholders_destroy(struct tsqlp_placeholders *placeholders) {
+void tsqlp_placeholders_destroy(struct tsqlp_placeholders *placeholders) {
     if (placeholders->locations != NULL) {
         free(placeholders->locations);
     }
 }
 
-struct tsqlp_sql_section sql_section_new() {
+struct tsqlp_sql_section tsqlp_sql_section_new() {
     return (struct tsqlp_sql_section) {
         .chunk = NULL,
         .len = 0,
@@ -1253,7 +1253,7 @@ struct tsqlp_placeholders *tsqlp_sql_section_placeholders(struct tsqlp_sql_secti
 }
 
 void
-sql_section_update(const char *chunk, size_t len, struct tsqlp_placeholders placeholders, struct tsqlp_sql_section *sql_section) {
+tsqlp_sql_section_update(const char *chunk, size_t len, struct tsqlp_placeholders placeholders, struct tsqlp_sql_section *sql_section) {
 
     // @todo: remove +1 and null character when tests don't print using %s
     char *buff = (char *) malloc_panic(sizeof(char) * (len + 1));
@@ -1269,14 +1269,14 @@ sql_section_update(const char *chunk, size_t len, struct tsqlp_placeholders plac
 
 }
 
-void sql_section_destroy(struct tsqlp_sql_section *sql_section) {
+void tsqlp_sql_section_destroy(struct tsqlp_sql_section *sql_section) {
     if (sql_section->chunk == NULL) {
         return;
     }
 
     free(sql_section->chunk);
 
-    placeholders_destroy(&sql_section->placeholders);
+    tsqlp_placeholders_destroy(&sql_section->placeholders);
 }
 
 void tsqlp_parse_result_serialize(struct tsqlp_parse_result *parse_result, FILE *file) {
@@ -1360,18 +1360,18 @@ struct tsqlp_parse_result *tsqlp_parse_result_new() {
         return NULL;
     }
 
-    parse_result->modifiers = sql_section_new();
-    parse_result->columns = sql_section_new();
-    parse_result->first_into = sql_section_new();
-    parse_result->tables = sql_section_new();
-    parse_result->where = sql_section_new();
-    parse_result->group_by = sql_section_new();
-    parse_result->having = sql_section_new();
-    parse_result->order_by = sql_section_new();
-    parse_result->limit = sql_section_new();
-    parse_result->procedure = sql_section_new();
-    parse_result->second_into = sql_section_new();
-    parse_result->flags = sql_section_new();
+    parse_result->modifiers = tsqlp_sql_section_new();
+    parse_result->columns = tsqlp_sql_section_new();
+    parse_result->first_into = tsqlp_sql_section_new();
+    parse_result->tables = tsqlp_sql_section_new();
+    parse_result->where = tsqlp_sql_section_new();
+    parse_result->group_by = tsqlp_sql_section_new();
+    parse_result->having = tsqlp_sql_section_new();
+    parse_result->order_by = tsqlp_sql_section_new();
+    parse_result->limit = tsqlp_sql_section_new();
+    parse_result->procedure = tsqlp_sql_section_new();
+    parse_result->second_into = tsqlp_sql_section_new();
+    parse_result->flags = tsqlp_sql_section_new();
 
     return parse_result;
 }
@@ -1381,18 +1381,18 @@ unsigned int tsqlp_api_version() {
 }
 
 void tsqlp_parse_result_free(struct tsqlp_parse_result *parse_result) {
-    sql_section_destroy(&parse_result->modifiers);
-    sql_section_destroy(&parse_result->columns);
-    sql_section_destroy(&parse_result->first_into);
-    sql_section_destroy(&parse_result->tables);
-    sql_section_destroy(&parse_result->where);
-    sql_section_destroy(&parse_result->group_by);
-    sql_section_destroy(&parse_result->having);
-    sql_section_destroy(&parse_result->order_by);
-    sql_section_destroy(&parse_result->limit);
-    sql_section_destroy(&parse_result->procedure);
-    sql_section_destroy(&parse_result->second_into);
-    sql_section_destroy(&parse_result->flags);
+    tsqlp_sql_section_destroy(&parse_result->modifiers);
+    tsqlp_sql_section_destroy(&parse_result->columns);
+    tsqlp_sql_section_destroy(&parse_result->first_into);
+    tsqlp_sql_section_destroy(&parse_result->tables);
+    tsqlp_sql_section_destroy(&parse_result->where);
+    tsqlp_sql_section_destroy(&parse_result->group_by);
+    tsqlp_sql_section_destroy(&parse_result->having);
+    tsqlp_sql_section_destroy(&parse_result->order_by);
+    tsqlp_sql_section_destroy(&parse_result->limit);
+    tsqlp_sql_section_destroy(&parse_result->procedure);
+    tsqlp_sql_section_destroy(&parse_result->second_into);
+    tsqlp_sql_section_destroy(&parse_result->flags);
 
     free(parse_result);
 }

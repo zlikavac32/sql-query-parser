@@ -75,20 +75,20 @@ struct tsqlp_parse_result *make_parse_result(sql_section_type section_name, stru
 }
 
 static struct tsqlp_sql_section sql_section_new_from_string(char *chunk, size_t placeholder_count, ...) {
-    struct tsqlp_sql_section section = sql_section_new();
+    struct tsqlp_sql_section section = tsqlp_sql_section_new();
 
-    struct tsqlp_placeholders placeholders = placeholders_new();
+    struct tsqlp_placeholders placeholders = tsqlp_placeholders_new();
 
     va_list arg_pointer;
     va_start(arg_pointer, placeholder_count);
     for (int i = 0; i < placeholder_count; i++) {
         size_t location = va_arg(arg_pointer, size_t);
 
-        placeholders_push(&placeholders, location);
+        tsqlp_placeholders_push(&placeholders, location);
     }
     va_end(arg_pointer);
 
-    sql_section_update(chunk, strlen(chunk), placeholders, &section);
+    tsqlp_sql_section_update(chunk, strlen(chunk), placeholders, &section);
 
     return section;
 }
@@ -1244,12 +1244,12 @@ Test(tsqlp_parse, parse_status_string) {
 Test(tsqlp_parse, tsqlp_parse_result_serialize) {
     struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    sql_section_update("*", strlen("*"), placeholders_new(), &parse_result->columns);
-    sql_section_update("table t", strlen("table t"), placeholders_new(), &parse_result->tables);
+    tsqlp_sql_section_update("*", strlen("*"), tsqlp_placeholders_new(), &parse_result->columns);
+    tsqlp_sql_section_update("table t", strlen("table t"), tsqlp_placeholders_new(), &parse_result->tables);
 
-    struct tsqlp_placeholders where_placeholders = placeholders_new();
-    placeholders_push(&where_placeholders, 4);
-    sql_section_update("a = ?", strlen("a = ?"), where_placeholders, &parse_result->where);
+    struct tsqlp_placeholders where_placeholders = tsqlp_placeholders_new();
+    tsqlp_placeholders_push(&where_placeholders, 4);
+    tsqlp_sql_section_update("a = ?", strlen("a = ?"), where_placeholders, &parse_result->where);
 
 #define EXPECTED_BUFF_LEN 1024
     char buff[EXPECTED_BUFF_LEN + 1];
@@ -1272,16 +1272,20 @@ Test(tsqlp_parse, tsqlp_parse_result_serialize) {
 Test(tsqlp_parse, tsqlp_parse_result_serialize_full) {
     struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
-    sql_section_update("DISTINCT SQL_CACHE", strlen("DISTINCT SQL_CACHE"), placeholders_new(), &parse_result->modifiers);
-    sql_section_update("id, SUM(money) m", strlen("id, SUM(money) n"), placeholders_new(), &parse_result->columns);
-    sql_section_update("table t", strlen("table t"), placeholders_new(), &parse_result->tables);
-    sql_section_update("a = 1", strlen("a = 1"), placeholders_new(), &parse_result->where);
-    sql_section_update("id ASC", strlen("id ASC"), placeholders_new(), &parse_result->group_by);
-    sql_section_update("money > 0", strlen("money > 0"), placeholders_new(), &parse_result->having);
-    sql_section_update("money DESC", strlen("money DESC"), placeholders_new(), &parse_result->order_by);
-    sql_section_update("1", strlen("1"), placeholders_new(), &parse_result->limit);
-    sql_section_update("INTO @user_id, @user_money", strlen("INTO @user_id, @user_money"), placeholders_new(), &parse_result->second_into);
-    sql_section_update("LOCK IN SHARE MODE", strlen("LOCK IN SHARE MODE"), placeholders_new(), &parse_result->flags);
+    tsqlp_sql_section_update("DISTINCT SQL_CACHE", strlen("DISTINCT SQL_CACHE"), tsqlp_placeholders_new(),
+                             &parse_result->modifiers);
+    tsqlp_sql_section_update("id, SUM(money) m", strlen("id, SUM(money) n"), tsqlp_placeholders_new(),
+                             &parse_result->columns);
+    tsqlp_sql_section_update("table t", strlen("table t"), tsqlp_placeholders_new(), &parse_result->tables);
+    tsqlp_sql_section_update("a = 1", strlen("a = 1"), tsqlp_placeholders_new(), &parse_result->where);
+    tsqlp_sql_section_update("id ASC", strlen("id ASC"), tsqlp_placeholders_new(), &parse_result->group_by);
+    tsqlp_sql_section_update("money > 0", strlen("money > 0"), tsqlp_placeholders_new(), &parse_result->having);
+    tsqlp_sql_section_update("money DESC", strlen("money DESC"), tsqlp_placeholders_new(), &parse_result->order_by);
+    tsqlp_sql_section_update("1", strlen("1"), tsqlp_placeholders_new(), &parse_result->limit);
+    tsqlp_sql_section_update("INTO @user_id, @user_money", strlen("INTO @user_id, @user_money"),
+                             tsqlp_placeholders_new(), &parse_result->second_into);
+    tsqlp_sql_section_update("LOCK IN SHARE MODE", strlen("LOCK IN SHARE MODE"), tsqlp_placeholders_new(),
+                             &parse_result->flags);
 
 #define EXPECTED_BUFF_LEN 1024
     char buff[EXPECTED_BUFF_LEN + 1];
