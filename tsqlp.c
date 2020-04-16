@@ -2,7 +2,7 @@
 #include "tsqlp.h"
 
 struct parse_state {
-    struct placeholders placeholders;
+    struct tsqlp_placeholders placeholders;
     int is_tracking_in_progress;
     size_t section_offset;
 };
@@ -12,72 +12,72 @@ typedef enum {
     TRY_PARSE
 } parse_strength;
 
-static parse_status_type
-parse_stmt(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_stmt(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_modifiers(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_modifiers(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_columns(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_columns(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_first_into(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_first_into(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_tables(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_tables(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type parse_partition(struct lexer *lexer);
+static tsqlp_parse_status parse_partition(struct lexer *lexer);
 
-static parse_status_type
-parse_where(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_where(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_group_by(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_group_by(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_having(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_having(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_order_by(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_order_by(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_limit(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_limit(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_procedure(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_procedure(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_second_into(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_second_into(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_flags(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_flags(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_expression(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_expression(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_table_list(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_table_list(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_joined_table(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_joined_table(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_table_factor(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_table_factor(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_arithm_expression(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_arithm_expression(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_predicate_expression(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_predicate_expression(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type
-parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state);
+static tsqlp_parse_status
+parse_simple_expression(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state);
 
-static parse_status_type parse_alias(struct lexer *lexer);
+static tsqlp_parse_status parse_alias(struct lexer *lexer);
 
-static parse_status_type
-parse_join_specification(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state,
+static tsqlp_parse_status
+parse_join_specification(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state,
                          parse_strength strength
 );
 
@@ -96,13 +96,13 @@ parse_state_type parse_state_start_counting(struct parse_state *parse_state, siz
 
 void parse_state_register_placeholder(struct parse_state *parse_state, size_t location);
 
-struct placeholders parse_state_finish_counting(struct parse_state *parse_state);
+struct tsqlp_placeholders parse_state_finish_counting(struct parse_state *parse_state);
 
 
 
 struct parse_state parse_state_new() {
     return (struct parse_state) {
-        .placeholders =  placeholders_new(),
+        .placeholders =  tsqlp_placeholders_new(),
         .section_offset = 0,
         .is_tracking_in_progress = 0
     };
@@ -114,19 +114,19 @@ parse_state_type parse_state_start_counting(struct parse_state *parse_state, siz
     }
 
     parse_state->is_tracking_in_progress = 1;
-    parse_state->placeholders = placeholders_new();
+    parse_state->placeholders = tsqlp_placeholders_new();
     parse_state->section_offset = section_offset;
 
     return STARTED_TRACKING_PLACEHOLDERS;
 }
 
 void parse_state_register_placeholder(struct parse_state *parse_state, size_t location) {
-    placeholders_push(&parse_state->placeholders, location - parse_state->section_offset);
+    tsqlp_placeholders_push(&parse_state->placeholders, location - parse_state->section_offset);
 }
 
-struct placeholders parse_state_finish_counting(struct parse_state *parse_state) {
+struct tsqlp_placeholders parse_state_finish_counting(struct parse_state *parse_state) {
     if (!parse_state->is_tracking_in_progress) {
-        return (struct placeholders) {
+        return (struct tsqlp_placeholders) {
             .locations = NULL,
             .count = 0
         };
@@ -139,22 +139,22 @@ struct placeholders parse_state_finish_counting(struct parse_state *parse_state)
 
 #define RETURN_IF_NOT_OK(expr) \
     do { \
-        parse_status_type status = expr; \
-        if (status != PARSE_OK) { \
+        tsqlp_parse_status status = expr; \
+        if (status != TSQLP_PARSE_OK) { \
             return status; \
         } \
     } while (0)
 #define RETURN_ERROR_IF_TOKEN_NOT(type, lexer) \
     do { \
         if (!token_is_of_type(type, lexer_peek(lexer))) { \
-            return PARSE_INVALID_SYNTAX; \
+            return TSQLP_PARSE_INVALID_SYNTAX; \
         } \
         lexer_consume(lexer); \
     } while (0)
 #define RETURN_SUCCESS_IF_TOKEN_NOT(type, lexer) \
     do { \
         if (!token_is_of_type(type, lexer_peek(lexer))) { \
-            return PARSE_OK; \
+            return TSQLP_PARSE_OK; \
         } \
         lexer_consume(lexer); \
     } while (0)
@@ -171,16 +171,16 @@ struct placeholders parse_state_finish_counting(struct parse_state *parse_state)
         int is_top_level = parse_state_start_counting(parse_state, position) == STARTED_TRACKING_PLACEHOLDERS; \
         size_t tokens_consumed = lexer_tokens_consumed(lexer); \
         \
-        parse_status_type status = call; \
+        tsqlp_parse_status status = call; \
         \
         if (is_top_level) { \
-            struct placeholders placeholders = parse_state_finish_counting(parse_state); \
+            struct tsqlp_placeholders tsqlp_placeholders = parse_state_finish_counting(parse_state); \
             \
             if (tokens_consumed < lexer_tokens_consumed(lexer)) { \
-                sql_section_update( \
+                tsqlp_sql_section_update( \
                     lexer_buffer(lexer) + position, \
                     token_position(lexer_peek_previous(lexer)) + token_length(lexer_peek_previous(lexer)) - position, \
-                    placeholders, \
+                    tsqlp_placeholders, \
                     &parse_result->section \
                 ); \
             } \
@@ -189,8 +189,8 @@ struct placeholders parse_state_finish_counting(struct parse_state *parse_state)
         return status; \
     } while (0)
 
-static parse_status_type
-parse_expression(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_expression(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     RETURN_IF_NOT_OK(parse_predicate_expression(lexer, parse_result, parse_state));
 
     switch (token_type(lexer_peek(lexer))) {
@@ -218,7 +218,7 @@ parse_expression(struct lexer *lexer, struct parse_result *parse_result, struct 
                 RETURN_IF_NOT_OK(parse_stmt(lexer, parse_result, parse_state));
                 RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
-                return PARSE_OK;
+                return TSQLP_PARSE_OK;
             }
 
             return parse_expression(lexer, parse_result, parse_state);
@@ -239,17 +239,17 @@ parse_expression(struct lexer *lexer, struct parse_result *parse_result, struct 
                 ) {
                 lexer_consume(lexer);
 
-                return PARSE_OK;
+                return TSQLP_PARSE_OK;
             }
 
-            return PARSE_INVALID_SYNTAX;
+            return TSQLP_PARSE_INVALID_SYNTAX;
         default:
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
     }
 }
 
-static parse_status_type
-parse_predicate_expression(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_predicate_expression(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     RETURN_IF_NOT_OK(parse_arithm_expression(lexer, parse_result, parse_state));
 
     if (token_is_of_type(T_K_SOUNDS, lexer_peek(lexer))) {
@@ -298,14 +298,14 @@ parse_predicate_expression(struct lexer *lexer, struct parse_result *parse_resul
 
             RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         default:
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
     }
 }
 
-static parse_status_type
-parse_arithm_expression(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_arithm_expression(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     RETURN_IF_NOT_OK(parse_simple_expression(lexer, parse_result, parse_state));
 
     switch (token_type(lexer_peek(lexer))) {
@@ -340,16 +340,16 @@ parse_arithm_expression(struct lexer *lexer, struct parse_result *parse_result, 
 
             RETURN_ERROR_IF_TOKEN_NOT(T_IDENTIFIER, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         default:
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
     }
 
     return parse_expression(lexer, parse_result, parse_state);
 }
 
-static parse_status_type
-parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_simple_expression(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     switch (token_type(lexer_peek(lexer))) {
         case T_K_ROW:
             lexer_consume(lexer);
@@ -366,7 +366,7 @@ parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, 
 
             RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         case T_NUMBER:
             // intentional
         case T_BIT_VALUE:
@@ -388,7 +388,7 @@ parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, 
         case T_K_NULL:
             lexer_consume(lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         case T_K_DATE:
             // intentional
         case T_K_TIME:
@@ -398,7 +398,7 @@ parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, 
 
             RETURN_ERROR_IF_TOKEN_NOT(T_STRING, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         case T_STRING:
             // intentional
             lexer_consume(lexer);
@@ -409,12 +409,12 @@ parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, 
                 RETURN_ERROR_IF_TOKEN_NOT(T_IDENTIFIER, lexer);
             }
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         case T_PLACEHOLDER: {
             struct token token = lexer_consume(lexer);
             parse_state_register_placeholder(parse_state, token_position(&token));
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         }
         case T_IDENTIFIER:
             lexer_consume(lexer);
@@ -433,7 +433,7 @@ parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, 
 
             RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         case T_K_EXISTS:
             lexer_consume(lexer);
 
@@ -441,7 +441,7 @@ parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, 
             RETURN_IF_NOT_OK(parse_stmt(lexer, parse_result, parse_state));
             RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         case T_K_SELECT:
             return parse_stmt(lexer, parse_result, parse_state);
         case T_OPEN_PAREN:
@@ -457,7 +457,7 @@ parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, 
 
             RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         case T_PLUS:
             // intentional
         case T_MINUS:
@@ -478,7 +478,7 @@ parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, 
             RETURN_IF_NOT_OK(parse_expression(lexer, parse_result, parse_state));
             RETURN_ERROR_IF_TOKEN_NOT(T_INTERVAL_UNIT, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         case T_K_CASE:
             lexer_consume(lexer);
 
@@ -487,7 +487,7 @@ parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, 
             }
 
             if (!token_is_of_type(T_K_WHEN, lexer_peek(lexer))) {
-                return PARSE_INVALID_SYNTAX;
+                return TSQLP_PARSE_INVALID_SYNTAX;
             }
 
             while (token_is_of_type(T_K_WHEN, lexer_peek(lexer))) {
@@ -507,7 +507,7 @@ parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, 
 
             RETURN_ERROR_IF_TOKEN_NOT(T_K_END, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         case T_K_MATCH:
             lexer_consume(lexer);
 
@@ -555,13 +555,13 @@ parse_simple_expression(struct lexer *lexer, struct parse_result *parse_result, 
 
             RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         default:
-            return PARSE_INVALID_SYNTAX;
+            return TSQLP_PARSE_INVALID_SYNTAX;
     }
 }
 
-static parse_status_type parse_modifiers_inner(struct lexer *lexer) {
+static tsqlp_parse_status parse_modifiers_inner(struct lexer *lexer) {
     const struct token *token = lexer_peek(lexer);
 
     if (token_is_of_type(T_K_ALL, token) || token_is_of_type(T_K_DISTINCT, token) ||
@@ -582,16 +582,16 @@ static parse_status_type parse_modifiers_inner(struct lexer *lexer) {
         lexer_consume(lexer);
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type
-parse_modifiers(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_modifiers(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     TRACK_SECTION(modifiers, lexer, parse_result, parse_state, parse_modifiers_inner(lexer));
 }
 
-static parse_status_type
-parse_columns_inner(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_columns_inner(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     RETURN_IF_NOT_OK(parse_expression(lexer, parse_result, parse_state));
 
     RETURN_IF_NOT_OK(parse_alias(lexer));
@@ -607,15 +607,15 @@ parse_columns_inner(struct lexer *lexer, struct parse_result *parse_result, stru
         RETURN_IF_NOT_OK(parse_alias(lexer));
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type
-parse_columns(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_columns(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     TRACK_SECTION(columns, lexer, parse_result, parse_state, parse_columns_inner(lexer, parse_result, parse_state));
 }
 
-static parse_status_type parse_first_into_inner(struct lexer *lexer) {
+static tsqlp_parse_status parse_first_into_inner(struct lexer *lexer) {
     RETURN_SUCCESS_IF_TOKEN_NOT(T_K_INTO, lexer);
 
     switch (token_type(lexer_peek(lexer))) {
@@ -682,13 +682,13 @@ static parse_status_type parse_first_into_inner(struct lexer *lexer) {
                 }
             }
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         case T_K_DUMPFILE:
             lexer_consume(lexer);
 
             RETURN_ERROR_IF_TOKEN_NOT(T_STRING, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         case T_VARIABLE:
             lexer_consume(lexer);
 
@@ -698,26 +698,26 @@ static parse_status_type parse_first_into_inner(struct lexer *lexer) {
                 RETURN_ERROR_IF_TOKEN_NOT(T_VARIABLE, lexer);
             }
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         default:
-            return PARSE_INVALID_SYNTAX;
+            return TSQLP_PARSE_INVALID_SYNTAX;
     }
 }
 
-static parse_status_type
-parse_first_into(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_first_into(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     TRACK_SECTION(first_into, lexer, parse_result, parse_state, parse_first_into_inner(lexer));
 }
 
-static parse_status_type
-parse_tables(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_tables(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     RETURN_SUCCESS_IF_TOKEN_NOT(T_K_FROM, lexer);
 
     TRACK_SECTION(tables, lexer, parse_result, parse_state, parse_table_list(lexer, parse_result, parse_state));
 }
 
-static parse_status_type
-parse_table_list(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_table_list(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     RETURN_IF_NOT_OK(parse_joined_table(lexer, parse_result, parse_state));
 
     while (token_is_of_type(T_COMMA, lexer_peek(lexer))) {
@@ -726,12 +726,12 @@ parse_table_list(struct lexer *lexer, struct parse_result *parse_result, struct 
         RETURN_IF_NOT_OK(parse_joined_table(lexer, parse_result, parse_state));
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
 
-static parse_status_type
-parse_joined_table(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_joined_table(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
 
     RETURN_IF_NOT_OK(parse_table_factor(lexer, parse_result, parse_state));
 
@@ -792,13 +792,13 @@ parse_joined_table(struct lexer *lexer, struct parse_result *parse_result, struc
 
                 break;
             default:
-                return PARSE_OK;
+                return TSQLP_PARSE_OK;
         }
     }
 }
 
-static parse_status_type
-parse_join_specification(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state,
+static tsqlp_parse_status
+parse_join_specification(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state,
                          parse_strength strength
 ) {
     switch (token_type(lexer_peek(lexer))) {
@@ -821,14 +821,14 @@ parse_join_specification(struct lexer *lexer, struct parse_result *parse_result,
 
             RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         default:
-            return (strength == TRY_PARSE) ? PARSE_OK : PARSE_INVALID_SYNTAX;
+            return (strength == TRY_PARSE) ? TSQLP_PARSE_OK : TSQLP_PARSE_INVALID_SYNTAX;
     }
 }
 
-static parse_status_type
-parse_table_factor(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_table_factor(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
 
     switch (token_type(lexer_peek(lexer))) {
         case T_OPEN_PAREN:
@@ -844,7 +844,7 @@ parse_table_factor(struct lexer *lexer, struct parse_result *parse_result, struc
 
                 if (!token_is_of_type(T_IDENTIFIER, lexer_peek(lexer)) &&
                     !token_is_of_type(T_QUALIFIED_IDENTIFIER, lexer_peek(lexer))) {
-                    return PARSE_INVALID_SYNTAX;
+                    return TSQLP_PARSE_INVALID_SYNTAX;
                 }
 
                 lexer_consume(lexer);
@@ -854,7 +854,7 @@ parse_table_factor(struct lexer *lexer, struct parse_result *parse_result, struc
 
                     if (!token_is_of_type(T_IDENTIFIER, lexer_peek(lexer)) &&
                         !token_is_of_type(T_QUALIFIED_IDENTIFIER, lexer_peek(lexer))) {
-                        return PARSE_INVALID_SYNTAX;
+                        return TSQLP_PARSE_INVALID_SYNTAX;
                     }
 
                     lexer_consume(lexer);
@@ -862,7 +862,7 @@ parse_table_factor(struct lexer *lexer, struct parse_result *parse_result, struc
 
                 RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
-                return PARSE_OK;
+                return TSQLP_PARSE_OK;
             }
 
             RETURN_ERROR_IF_TOKEN_NOT(T_IDENTIFIER, lexer);
@@ -875,13 +875,13 @@ parse_table_factor(struct lexer *lexer, struct parse_result *parse_result, struc
 
             RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         case T_PLACEHOLDER: {
             struct token token = lexer_consume(lexer);
 
             parse_state_register_placeholder(parse_state, token_position(&token));
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         }
         case T_IDENTIFIER:
             // intentional
@@ -902,7 +902,7 @@ parse_table_factor(struct lexer *lexer, struct parse_result *parse_result, struc
                 lexer_consume(lexer);
 
                 if (!token_is_of_type(T_K_INDEX, lexer_peek(lexer)) && !token_is_of_type(T_K_KEY, lexer_peek(lexer))) {
-                    return PARSE_INVALID_SYNTAX;
+                    return TSQLP_PARSE_INVALID_SYNTAX;
                 }
 
                 lexer_consume(lexer);
@@ -947,14 +947,14 @@ parse_table_factor(struct lexer *lexer, struct parse_result *parse_result, struc
                 break;
             }
 
-            return PARSE_OK;
+            return TSQLP_PARSE_OK;
         default:
 
-            return PARSE_INVALID_SYNTAX;
+            return TSQLP_PARSE_INVALID_SYNTAX;
     }
 }
 
-static parse_status_type parse_alias(struct lexer *lexer) {
+static tsqlp_parse_status parse_alias(struct lexer *lexer) {
     if (token_is_of_type(T_K_AS, lexer_peek(lexer)) || token_is_of_type(T_IDENTIFIER, lexer_peek(lexer))) {
         struct token token = lexer_consume(lexer);
 
@@ -963,10 +963,10 @@ static parse_status_type parse_alias(struct lexer *lexer) {
         }
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type parse_partition(struct lexer *lexer) {
+static tsqlp_parse_status parse_partition(struct lexer *lexer) {
     if (token_is_of_type(T_K_PARTITION, lexer_peek(lexer))) {
         lexer_consume(lexer);
 
@@ -980,24 +980,24 @@ static parse_status_type parse_partition(struct lexer *lexer) {
         }
         RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
-        return PARSE_OK;
+        return TSQLP_PARSE_OK;
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type
-parse_where(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_where(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     if (token_is_of_type(T_K_WHERE, lexer_peek(lexer))) {
         lexer_consume(lexer);
 
         TRACK_SECTION(where, lexer, parse_result, parse_state, parse_expression(lexer, parse_result, parse_state));
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type parse_group_by_inner(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status parse_group_by_inner(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     RETURN_IF_NOT_OK(parse_expression(lexer, parse_result, parse_state));
 
     if (token_is_of_type(T_K_ASC, lexer_peek(lexer)) || token_is_of_type(T_K_DESC, lexer_peek(lexer))) {
@@ -1014,11 +1014,11 @@ static parse_status_type parse_group_by_inner(struct lexer *lexer, struct parse_
         }
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type
-parse_group_by(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_group_by(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     if (token_is_of_type(T_K_GROUP, lexer_peek(lexer))) {
         lexer_consume(lexer);
 
@@ -1027,22 +1027,22 @@ parse_group_by(struct lexer *lexer, struct parse_result *parse_result, struct pa
         TRACK_SECTION(group_by, lexer, parse_result, parse_state, parse_group_by_inner(lexer, parse_result, parse_state));
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type
-parse_having(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_having(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     if (token_is_of_type(T_K_HAVING, lexer_peek(lexer))) {
         lexer_consume(lexer);
 
         TRACK_SECTION(having, lexer, parse_result, parse_state, parse_expression(lexer, parse_result, parse_state));
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
 
-static parse_status_type parse_order_by_inner(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status parse_order_by_inner(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     RETURN_IF_NOT_OK(parse_expression(lexer, parse_result, parse_state));
 
     if (token_is_of_type(T_K_ASC, lexer_peek(lexer)) || token_is_of_type(T_K_DESC, lexer_peek(lexer))) {
@@ -1059,11 +1059,11 @@ static parse_status_type parse_order_by_inner(struct lexer *lexer, struct parse_
         }
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type
-parse_order_by(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_order_by(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     if (token_is_of_type(T_K_ORDER, lexer_peek(lexer))) {
         lexer_consume(lexer);
 
@@ -1072,12 +1072,12 @@ parse_order_by(struct lexer *lexer, struct parse_result *parse_result, struct pa
         TRACK_SECTION(order_by, lexer, parse_result, parse_state, parse_order_by_inner(lexer, parse_result, parse_state));
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type parse_limit_inner(struct lexer *lexer, struct parse_state *parse_state) {
+static tsqlp_parse_status parse_limit_inner(struct lexer *lexer, struct parse_state *parse_state) {
     if (!token_is_of_type(T_NUMBER, lexer_peek(lexer)) && !token_is_of_type(T_PLACEHOLDER, lexer_peek(lexer))) {
-        return PARSE_INVALID_SYNTAX;
+        return TSQLP_PARSE_INVALID_SYNTAX;
     }
 
     if (token_is_of_type(T_PLACEHOLDER, lexer_peek(lexer))) {
@@ -1092,7 +1092,7 @@ static parse_status_type parse_limit_inner(struct lexer *lexer, struct parse_sta
         lexer_consume(lexer);
 
         if (!token_is_of_type(T_NUMBER, lexer_peek(lexer)) && !token_is_of_type(T_PLACEHOLDER, lexer_peek(lexer))) {
-            return PARSE_INVALID_SYNTAX;
+            return TSQLP_PARSE_INVALID_SYNTAX;
         }
 
         if (token_is_of_type(T_PLACEHOLDER, lexer_peek(lexer))) {
@@ -1102,22 +1102,22 @@ static parse_status_type parse_limit_inner(struct lexer *lexer, struct parse_sta
         lexer_consume(lexer);
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type
-parse_limit(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_limit(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     if (token_is_of_type(T_K_LIMIT, lexer_peek(lexer))) {
         lexer_consume(lexer);
 
         TRACK_SECTION(limit, lexer, parse_result, parse_state, parse_limit_inner(lexer, parse_state));
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type
-parse_procedure_inner(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_procedure_inner(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     RETURN_ERROR_IF_TOKEN_NOT(T_IDENTIFIER, lexer);
     RETURN_ERROR_IF_TOKEN_NOT(T_OPEN_PAREN, lexer);
 
@@ -1133,11 +1133,11 @@ parse_procedure_inner(struct lexer *lexer, struct parse_result *parse_result, st
 
     RETURN_ERROR_IF_TOKEN_NOT(T_CLOSE_PAREN, lexer);
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type
-parse_procedure(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_procedure(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     if (token_is_of_type(T_K_PROCEDURE, lexer_peek(lexer))) {
         lexer_consume(lexer);
 
@@ -1145,15 +1145,15 @@ parse_procedure(struct lexer *lexer, struct parse_result *parse_result, struct p
                       parse_procedure_inner(lexer, parse_result, parse_state));
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type
-parse_second_into(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_second_into(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     TRACK_SECTION(second_into, lexer, parse_result, parse_state, parse_first_into_inner(lexer));
 }
 
-static parse_status_type parse_flags_inner(struct lexer *lexer) {
+static tsqlp_parse_status parse_flags_inner(struct lexer *lexer) {
     if (token_is_of_type(T_K_FOR, lexer_peek(lexer))) {
         lexer_consume(lexer);
 
@@ -1166,16 +1166,16 @@ static parse_status_type parse_flags_inner(struct lexer *lexer) {
         RETURN_ERROR_IF_TOKEN_NOT(T_K_MODE, lexer);
     }
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-static parse_status_type
-parse_flags(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_flags(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     TRACK_SECTION(flags, lexer, parse_result, parse_state, parse_flags_inner(lexer));
 }
 
-static parse_status_type
-parse_stmt(struct lexer *lexer, struct parse_result *parse_result, struct parse_state *parse_state) {
+static tsqlp_parse_status
+parse_stmt(struct lexer *lexer, struct tsqlp_parse_result *parse_result, struct parse_state *parse_state) {
     RETURN_ERROR_IF_TOKEN_NOT(T_K_SELECT, lexer);
 
     RETURN_IF_NOT_OK(parse_modifiers(lexer, parse_result, parse_state));
@@ -1191,40 +1191,27 @@ parse_stmt(struct lexer *lexer, struct parse_result *parse_result, struct parse_
     RETURN_IF_NOT_OK(parse_second_into(lexer, parse_result, parse_state));
     RETURN_IF_NOT_OK(parse_flags(lexer, parse_result, parse_state));
 
-    return PARSE_OK;
+    return TSQLP_PARSE_OK;
 }
 
-const char *parse_status_type_to_string(parse_status_type status_type) {
-    switch (status_type) {
-        case PARSE_OK:
-            return "PARSE_OK";
-        case PARSE_INVALID_SYNTAX:
-            return "PARSE_INVALID_SYNTAX";
-        case PARSE_ERROR_INVALID_ARGUMENT:
-            return "PARSE_ERROR_INVALID_ARGUMENT";
-        default:
-            return "UNKNOWN";
-    }
-}
-
-struct placeholders placeholders_new() {
-    return (struct placeholders) {
+struct tsqlp_placeholders tsqlp_placeholders_new() {
+    return (struct tsqlp_placeholders) {
         .locations = NULL,
         .count = 0
     };
 }
 
-void placeholders_push(struct placeholders *placeholders, size_t location) {
+void tsqlp_placeholders_push(struct tsqlp_placeholders *placeholders, size_t location) {
     placeholders->locations = (size_t *) realloc_panic(placeholders->locations,
                                                        (placeholders->count + 1) * sizeof(size_t));
     placeholders->locations[placeholders->count++] = location;
 }
 
-int placeholders_count(const struct placeholders *placeholders) {
+int tsqlp_placeholders_count(const struct tsqlp_placeholders *placeholders) {
     return placeholders->count;
 }
 
-size_t placeholders_position_at(const struct placeholders *placeholders, unsigned int index) {
+size_t tsqlp_placeholders_position_at(const struct tsqlp_placeholders *placeholders, unsigned int index) {
     if (index < placeholders->count) {
         return placeholders->locations[index];
     }
@@ -1232,14 +1219,14 @@ size_t placeholders_position_at(const struct placeholders *placeholders, unsigne
     return 0;
 }
 
-void placeholders_destroy(struct placeholders *placeholders) {
+void tsqlp_placeholders_destroy(struct tsqlp_placeholders *placeholders) {
     if (placeholders->locations != NULL) {
         free(placeholders->locations);
     }
 }
 
-struct sql_section sql_section_new() {
-    return (struct sql_section) {
+struct tsqlp_sql_section tsqlp_sql_section_new() {
+    return (struct tsqlp_sql_section) {
         .chunk = NULL,
         .len = 0,
         .placeholders = {
@@ -1249,24 +1236,24 @@ struct sql_section sql_section_new() {
     };
 }
 
-size_t sql_section_length(const struct sql_section *sql_section) {
+size_t tsqlp_sql_section_length(const struct tsqlp_sql_section *sql_section) {
     return sql_section->len;
 }
 
-const char *sql_section_content(const struct sql_section *sql_section) {
+const char *tsqlp_sql_section_content(const struct tsqlp_sql_section *sql_section) {
     return sql_section->chunk;
 }
 
-int sql_section_is_populated(const struct sql_section *sql_section) {
+int tsqlp_sql_section_is_populated(const struct tsqlp_sql_section *sql_section) {
     return sql_section->len > 0;
 }
 
-struct placeholders *sql_section_placeholders(struct sql_section *sql_section) {
+struct tsqlp_placeholders *tsqlp_sql_section_placeholders(struct tsqlp_sql_section *sql_section) {
     return &sql_section->placeholders;
 }
 
 void
-sql_section_update(const char *chunk, size_t len, struct placeholders placeholders, struct sql_section *sql_section) {
+tsqlp_sql_section_update(const char *chunk, size_t len, struct tsqlp_placeholders placeholders, struct tsqlp_sql_section *sql_section) {
 
     // @todo: remove +1 and null character when tests don't print using %s
     char *buff = (char *) malloc_panic(sizeof(char) * (len + 1));
@@ -1274,7 +1261,7 @@ sql_section_update(const char *chunk, size_t len, struct placeholders placeholde
 
     memcpy(buff, chunk, len);
 
-    *sql_section = (struct sql_section) {
+    *sql_section = (struct tsqlp_sql_section) {
         .chunk = buff,
         .len = len,
         .placeholders = placeholders
@@ -1282,66 +1269,31 @@ sql_section_update(const char *chunk, size_t len, struct placeholders placeholde
 
 }
 
-void sql_section_destroy(struct sql_section *sql_section) {
+void tsqlp_sql_section_destroy(struct tsqlp_sql_section *sql_section) {
     if (sql_section->chunk == NULL) {
         return;
     }
 
     free(sql_section->chunk);
 
-    placeholders_destroy(&sql_section->placeholders);
+    tsqlp_placeholders_destroy(&sql_section->placeholders);
 }
 
-struct parse_result parse_result_new() {
-    struct parse_result parse_result;
-
-    parse_result.modifiers = sql_section_new();
-    parse_result.columns = sql_section_new();
-    parse_result.first_into = sql_section_new();
-    parse_result.tables = sql_section_new();
-    parse_result.where = sql_section_new();
-    parse_result.group_by = sql_section_new();
-    parse_result.having = sql_section_new();
-    parse_result.order_by = sql_section_new();
-    parse_result.limit = sql_section_new();
-    parse_result.procedure = sql_section_new();
-    parse_result.second_into = sql_section_new();
-    parse_result.flags = sql_section_new();
-
-    return parse_result;
-}
-
-
-void parse_result_destroy(struct parse_result *parse_result) {
-    sql_section_destroy(&parse_result->modifiers);
-    sql_section_destroy(&parse_result->columns);
-    sql_section_destroy(&parse_result->first_into);
-    sql_section_destroy(&parse_result->tables);
-    sql_section_destroy(&parse_result->where);
-    sql_section_destroy(&parse_result->group_by);
-    sql_section_destroy(&parse_result->having);
-    sql_section_destroy(&parse_result->order_by);
-    sql_section_destroy(&parse_result->limit);
-    sql_section_destroy(&parse_result->procedure);
-    sql_section_destroy(&parse_result->second_into);
-    sql_section_destroy(&parse_result->flags);
-}
-
-void parse_result_serialize(struct parse_result *parse_result, FILE *file) {
+void tsqlp_parse_result_serialize(struct tsqlp_parse_result *parse_result, FILE *file) {
 
 #define PRINT_SECTION(section) \
     do { \
-        if (sql_section_is_populated(&parse_result->section)) { \
-            struct placeholders *placeholders = sql_section_placeholders(&parse_result->section); \
-            size_t count = placeholders_count(placeholders); \
+        if (tsqlp_sql_section_is_populated(&parse_result->section)) { \
+            struct tsqlp_placeholders *tsqlp_placeholders = tsqlp_sql_section_placeholders(&parse_result->section); \
+            size_t count = tsqlp_placeholders_count(tsqlp_placeholders); \
             fprintf(file, "%s %ld ", #section, count); \
             \
             for (int i = 0; i < count; i++) { \
-                fprintf(file, "%ld ", placeholders_position_at(placeholders, i)); \
+                fprintf(file, "%ld ", tsqlp_placeholders_position_at(tsqlp_placeholders, i)); \
             } \
             \
-            fprintf(file, "%ld ", sql_section_length(&parse_result->section)); \
-            fwrite(sql_section_content(&parse_result->section), sql_section_length(&parse_result->section), 1, file); \
+            fprintf(file, "%ld ", tsqlp_sql_section_length(&parse_result->section)); \
+            fwrite(tsqlp_sql_section_content(&parse_result->section), tsqlp_sql_section_length(&parse_result->section), 1, file); \
             \
             fprintf(file, "\n"); \
         } \
@@ -1382,18 +1334,18 @@ void *realloc_panic(void *ptr, size_t size) {
     return ptr;
 }
 
-parse_status_type tsqlp_parse(const char *sql, size_t len, struct parse_result *parse_result) {
+tsqlp_parse_status tsqlp_parse(const char *sql, size_t len, struct tsqlp_parse_result *parse_result) {
     if (sql == NULL) {
-        return PARSE_ERROR_INVALID_ARGUMENT;
+        return TSQLP_PARSE_ERROR_INVALID_ARGUMENT;
     }
 
     struct lexer lexer = lexer_new(sql, len);
     struct parse_state parse_state = parse_state_new();
 
-    parse_status_type status = parse_stmt(&lexer, parse_result, &parse_state);
+    tsqlp_parse_status status = parse_stmt(&lexer, parse_result, &parse_state);
 
-    if (status == PARSE_OK && lexer_has(&lexer)) {
-        status = PARSE_INVALID_SYNTAX;
+    if (status == TSQLP_PARSE_OK && lexer_has(&lexer)) {
+        status = TSQLP_PARSE_INVALID_SYNTAX;
     }
 
     lexer_destroy(&lexer);
@@ -1401,16 +1353,25 @@ parse_status_type tsqlp_parse(const char *sql, size_t len, struct parse_result *
     return status;
 }
 
-struct parse_result *tsqlp_parse_result_new() {
-    struct parse_result *parse_result = (struct parse_result *) malloc(sizeof(struct parse_result));
+struct tsqlp_parse_result *tsqlp_parse_result_new() {
+    struct tsqlp_parse_result *parse_result = (struct tsqlp_parse_result *) malloc(sizeof(struct tsqlp_parse_result));
 
     if (parse_result == NULL) {
         return NULL;
     }
 
-    struct parse_result initialized_parse_result = parse_result_new();
-
-    memcpy(parse_result, &initialized_parse_result, sizeof(struct parse_result));
+    parse_result->modifiers = tsqlp_sql_section_new();
+    parse_result->columns = tsqlp_sql_section_new();
+    parse_result->first_into = tsqlp_sql_section_new();
+    parse_result->tables = tsqlp_sql_section_new();
+    parse_result->where = tsqlp_sql_section_new();
+    parse_result->group_by = tsqlp_sql_section_new();
+    parse_result->having = tsqlp_sql_section_new();
+    parse_result->order_by = tsqlp_sql_section_new();
+    parse_result->limit = tsqlp_sql_section_new();
+    parse_result->procedure = tsqlp_sql_section_new();
+    parse_result->second_into = tsqlp_sql_section_new();
+    parse_result->flags = tsqlp_sql_section_new();
 
     return parse_result;
 }
@@ -1419,11 +1380,32 @@ unsigned int tsqlp_api_version() {
     return API_VERSION;
 }
 
-void tsql_parse_result_free(struct parse_result *parse_result) {
-    parse_result_destroy(parse_result);
+void tsqlp_parse_result_free(struct tsqlp_parse_result *parse_result) {
+    tsqlp_sql_section_destroy(&parse_result->modifiers);
+    tsqlp_sql_section_destroy(&parse_result->columns);
+    tsqlp_sql_section_destroy(&parse_result->first_into);
+    tsqlp_sql_section_destroy(&parse_result->tables);
+    tsqlp_sql_section_destroy(&parse_result->where);
+    tsqlp_sql_section_destroy(&parse_result->group_by);
+    tsqlp_sql_section_destroy(&parse_result->having);
+    tsqlp_sql_section_destroy(&parse_result->order_by);
+    tsqlp_sql_section_destroy(&parse_result->limit);
+    tsqlp_sql_section_destroy(&parse_result->procedure);
+    tsqlp_sql_section_destroy(&parse_result->second_into);
+    tsqlp_sql_section_destroy(&parse_result->flags);
+
     free(parse_result);
 }
 
-extern const char *tsqlp_parse_status_to_message(parse_status_type status_type) {
-    return parse_status_type_to_string(status_type);
+const char *tsqlp_parse_status_to_message(tsqlp_parse_status parse_status) {
+    switch (parse_status) {
+        case TSQLP_PARSE_OK:
+            return "PARSE_OK";
+        case TSQLP_PARSE_INVALID_SYNTAX:
+            return "PARSE_INVALID_SYNTAX";
+        case TSQLP_PARSE_ERROR_INVALID_ARGUMENT:
+            return "PARSE_ERROR_INVALID_ARGUMENT";
+        default:
+            return "UNKNOWN";
+    }
 }

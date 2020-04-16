@@ -24,25 +24,25 @@ int main(int argc, char *argv[]) {
         total_read_size += read_size;
     }
 
-    struct parse_result *parse_result = tsqlp_parse_result_new();
+    struct tsqlp_parse_result *parse_result = tsqlp_parse_result_new();
 
     if (parse_result == NULL) {
         exit(1);
     }
 
-    parse_status_type parse_status = tsqlp_parse(sql, total_read_size, parse_result);
+    tsqlp_parse_status parse_status = tsqlp_parse(sql, total_read_size, parse_result);
 
     free(sql);
 
-    if (parse_status != PARSE_OK) {
-        tsql_parse_result_free(parse_result);
+    if (parse_status != TSQLP_PARSE_OK) {
+        tsqlp_parse_result_free(parse_result);
 
         fprintf(stderr, "%s\n", tsqlp_parse_status_to_message(parse_status));
         exit(2);
     }
 
-    parse_result_serialize(parse_result, stdout);
-    tsql_parse_result_free(parse_result);
+    tsqlp_parse_result_serialize(parse_result, stdout);
+    tsqlp_parse_result_free(parse_result);
 
     return 0;
 }
