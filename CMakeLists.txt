@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
-add_library(lib SHARED tsqlp.c tsqlp.h scanner.c lexer.c lexer.h)
+add_library(lib SHARED tsqlp.c tsqlp.h platform/mysql/scanner.c platform/mysql/lexer.c platform/mysql/lexer.h platform/mysql/parser.c)
 set_target_properties(lib PROPERTIES OUTPUT_NAME "tsqlp")
 
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
