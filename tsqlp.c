@@ -83,26 +83,26 @@ parse_join_specification(struct lexer *lexer, struct tsqlp_parse_result *parse_r
 
 static tsqlp_parse_status tsqlp_parse_mysql(const char *sql, size_t len, struct tsqlp_parse_result *parse_result);
 
-void *malloc_panic(size_t size);
+static void *malloc_panic(size_t size);
 
-void *realloc_panic(void *ptr, size_t size);
+static void *realloc_panic(void *ptr, size_t size);
 
 typedef enum {
     STILL_TRACKING_PLACEHOLDERS,
     STARTED_TRACKING_PLACEHOLDERS
 } parse_state_type;
 
-struct parse_state parse_state_new();
+static struct parse_state parse_state_new();
 
-parse_state_type parse_state_start_counting(struct parse_state *parse_state, size_t section_offset);
+static parse_state_type parse_state_start_counting(struct parse_state *parse_state, size_t section_offset);
 
-void parse_state_register_placeholder(struct parse_state *parse_state, size_t location);
+static void parse_state_register_placeholder(struct parse_state *parse_state, size_t location);
 
-struct tsqlp_placeholders parse_state_finish_counting(struct parse_state *parse_state);
+static struct tsqlp_placeholders parse_state_finish_counting(struct parse_state *parse_state);
 
 
 
-struct parse_state parse_state_new() {
+static struct parse_state parse_state_new() {
     return (struct parse_state) {
         .placeholders =  tsqlp_placeholders_new(),
         .section_offset = 0,
@@ -110,7 +110,7 @@ struct parse_state parse_state_new() {
     };
 }
 
-parse_state_type parse_state_start_counting(struct parse_state *parse_state, size_t section_offset) {
+static parse_state_type parse_state_start_counting(struct parse_state *parse_state, size_t section_offset) {
     if (parse_state->is_tracking_in_progress) {
         return STILL_TRACKING_PLACEHOLDERS;
     }
@@ -122,11 +122,11 @@ parse_state_type parse_state_start_counting(struct parse_state *parse_state, siz
     return STARTED_TRACKING_PLACEHOLDERS;
 }
 
-void parse_state_register_placeholder(struct parse_state *parse_state, size_t location) {
+static void parse_state_register_placeholder(struct parse_state *parse_state, size_t location) {
     tsqlp_placeholders_push(&parse_state->placeholders, location - parse_state->section_offset);
 }
 
-struct tsqlp_placeholders parse_state_finish_counting(struct parse_state *parse_state) {
+static struct tsqlp_placeholders parse_state_finish_counting(struct parse_state *parse_state) {
     if (!parse_state->is_tracking_in_progress) {
         return (struct tsqlp_placeholders) {
             .locations = NULL,
