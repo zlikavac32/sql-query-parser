@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-#include "lib/tsqlp.h"
+#include "include/tsqlp.h"
 
 struct tsqlp_placeholders placeholders_new();
 

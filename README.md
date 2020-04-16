@@ -8,7 +8,7 @@ Currently this parser targets MySQL SQL grammar until version `8.0`.
 
 This library should parse any valid `SELECT` statement but it will also parse some invalid statements as valid. This is by design, since intention is to use this to parse already valid statements and this way grammar is simplified. 
 
-For more info about the library check `lib/tsqlp.h`.
+For more info about the library check `include/tsqlp.h`.
 
 With the library comes standalone binary to decompose `SELECT` statements into sections called `tsqlp`.
 

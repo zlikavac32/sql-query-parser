@@ -20,4 +20,4 @@ set_target_properties(main PROPERTIES OUTPUT_NAME "tsqlp")
 
 install(TARGETS main DESTINATION bin)
 install(TARGETS lib DESTINATION lib)
-install(FILES lib/tsqlp.h DESTINATION include)
+install(FILES include/tsqlp.h DESTINATION include)
