@@ -81,6 +81,8 @@ parse_join_specification(struct lexer *lexer, struct tsqlp_parse_result *parse_r
                          parse_strength strength
 );
 
+static tsqlp_parse_status tsqlp_parse_mysql(const char *sql, size_t len, struct tsqlp_parse_result *parse_result);
+
 void *malloc_panic(size_t size);
 
 void *realloc_panic(void *ptr, size_t size);
@@ -1334,26 +1336,29 @@ void *realloc_panic(void *ptr, size_t size) {
     return ptr;
 }
 
+static tsqlp_parse_status tsqlp_parse_mysql(const char *sql, size_t len, struct tsqlp_parse_result *parse_result) {
+    struct lexer lexer = lexer_new(sql, len);
+    struct parse_state parse_state = parse_state_new();
+
+    tsqlp_parse_status status = parse_stmt(&lexer, parse_result, &parse_state);
+
+    if (status == TSQLP_PARSE_OK && lexer_has(&lexer)) {
+        status = TSQLP_PARSE_INVALID_SYNTAX;
+    }
+
+    lexer_destroy(&lexer);
+
+    return status;
+}
+
 tsqlp_parse_status tsqlp_parse(const char *sql, size_t len, tsqlp_platform platform, struct tsqlp_parse_result *parse_result) {
     if (sql == NULL) {
         return TSQLP_PARSE_ERROR_INVALID_ARGUMENT;
     }
 
     switch (platform) {
-        case TSQLP_PLATFORM_MYSQL: {
-            struct lexer lexer = lexer_new(sql, len);
-            struct parse_state parse_state = parse_state_new();
-
-            tsqlp_parse_status status = parse_stmt(&lexer, parse_result, &parse_state);
-
-            if (status == TSQLP_PARSE_OK && lexer_has(&lexer)) {
-                status = TSQLP_PARSE_INVALID_SYNTAX;
-            }
-
-            lexer_destroy(&lexer);
-
-            return status;
-        }
+        case TSQLP_PLATFORM_MYSQL:
+            return tsqlp_parse_mysql(sql, len, parse_result);
         default:
             return TSQLP_PARSE_UNKNOWN_PLATFORM;
     }
