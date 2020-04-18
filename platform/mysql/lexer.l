@@ -1,4 +1,4 @@
-%option outfile="scanner.c" noyywrap warn nodefault caseless
+%option outfile="scanner.c" noyywrap warn nodefault caseless prefix="mysql"
 
 %{
 
@@ -8,27 +8,27 @@
 size_t consumed_chars = 0;
 
 #undef YY_NULL
-#define YY_USER_ACTION consumed_chars += yyleng;
+#define YY_USER_ACTION consumed_chars += mysqlleng;
 #define YY_NO_UNPUT 1
 #define YY_NULL token_new(T_EOF, NULL, 0, consumed_chars)
 #define YY_DECL struct token lexer_lex()
 
-int yylex_destroy (void);
-void yyset_in(FILE *in);
-FILE *yyget_in();
+int mysqllex_destroy (void);
+void mysqlset_in(FILE *in);
+FILE *mysqlget_in();
 
-void lexer_use_buffer(const char *buff, size_t len) {
+void mysql_lexer_use_buffer(const char *buff, size_t len) {
     FILE *f = fmemopen((void *) buff, len, "r");
     consumed_chars = 0;
-    yyset_in(f);
+    mysqlset_in(f);
 }
 
-void lexer_clear_buffer() {
+void mysql_lexer_clear_buffer() {
     fclose(yyget_in());
-    yylex_destroy();
+    mysqllex_destroy();
 }
 
-#define RETURN_TOKEN_FOR(type) return token_new(type, yytext, yyleng, consumed_chars - yyleng)
+#define RETURN_TOKEN_FOR(type) return token_new(type, mysqltext, mysqlleng, consumed_chars - mysqlleng)
 
 %} 
 

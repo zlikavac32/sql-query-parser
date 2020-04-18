@@ -31,7 +31,7 @@ static void lexer_ensure_have_current(struct lexer *lexer);
 static void lexer_ensure_have_next(struct lexer *lexer);
 
 
-extern void lexer_use_buffer(const char *buff, size_t len);
+extern void mysql_lexer_use_buffer(const char *buff, size_t len);
 
 #define READ_NEXT_TOKEN(token) \
     do { \
@@ -77,7 +77,7 @@ static void lexer_ensure_have_next(struct lexer *lexer) {
 }
 
 struct lexer lexer_new(const char *buff, size_t len) {
-    lexer_use_buffer(buff, len);
+    mysql_lexer_use_buffer(buff, len);
 
     struct lexer lexer = (struct lexer) {
         .current = token_new(T_UNKNOWN, NULL, 0, 0),
@@ -101,10 +101,10 @@ const char *lexer_buffer(const struct lexer *lexer) {
     return lexer->context.buff;
 }
 
-extern void lexer_clear_buffer();
+extern void mysql_lexer_clear_buffer();
 
 void lexer_destroy(struct lexer *lexer) {
-    lexer_clear_buffer();
+    mysql_lexer_clear_buffer();
 }
 
 size_t lexer_tokens_consumed(const struct lexer *lexer) {
