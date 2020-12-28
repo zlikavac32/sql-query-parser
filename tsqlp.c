@@ -881,6 +881,8 @@ parse_table_factor(struct lexer *lexer, struct tsqlp_parse_result *parse_result,
 
             parse_state_register_placeholder(parse_state, token_position(&token));
 
+            RETURN_IF_NOT_OK(parse_alias(lexer));
+
             return TSQLP_PARSE_OK;
         }
         case T_IDENTIFIER:
