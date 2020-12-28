@@ -937,6 +937,8 @@ Test(tsqlp_parse, join_table) {
                       "t RIGHT OUTER JOIN t ON 1 = `t`, "
                       "t LEFT JOIN t USING (a, `b`), "
                       "t JOIN t, "
+                      "t JOIN ?, "
+                      "t JOIN ? k, "
                       "t JOIN t t, "
                       "t JOIN t ON ?, "
                       "t STRAIGHT JOIN t, "
@@ -958,6 +960,8 @@ Test(tsqlp_parse, join_table) {
                      "t RIGHT OUTER JOIN t ON 1 = `t`, "
                      "t LEFT JOIN t USING (a, `b`), "
                      "t JOIN t, "
+                     "t JOIN ?, "
+                     "t JOIN ? k, "
                      "t JOIN t t, "
                      "t JOIN t ON ?, "
                      "t STRAIGHT JOIN t, "
@@ -971,7 +975,7 @@ Test(tsqlp_parse, join_table) {
         parse_result,
         make_parse_result(
             SECTION_COLUMNS, sql_section_new_from_string("1", 0),
-            SECTION_TABLES, sql_section_new_from_string(expected, 2, 140, 267),
+            SECTION_TABLES, sql_section_new_from_string(expected, 4, 140, 250, 260, 289),
             NULL
         )
     );
